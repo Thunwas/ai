@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-Frame-Options" content="ALLOWALL">
+<title>AI Prompts by Department</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --card-bg: #1a2030;
+  --border: rgba(255,255,255,0.07);
+  --text: #cdd9e5;
+  --muted: #5c6b7a;
+  --radius: 14px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { width:100%; height:auto; overflow-x:hidden; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Sarabun', sans-serif;
+  padding: 48px 20px 80px;
+  background-image:
+    radial-gradient(ellipse at 15% 0%, rgba(88,166,255,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 100%, rgba(163,113,247,0.06) 0%, transparent 55%);
+}
+
+/* ── HEADER ── */
+.header { text-align:center; margin-bottom:44px; }
+.header-badge {
+  display:inline-block;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; font-weight:700;
+  letter-spacing:3px; text-transform:uppercase;
+  padding:6px 20px; border-radius:99px;
+  background:rgba(88,166,255,0.1);
+  border:1px solid rgba(88,166,255,0.2);
+  color:#58a6ff; margin-bottom:20px;
+}
+h1 { font-size:clamp(1.8rem,5vw,3rem); font-weight:800; line-height:1.2; margin-bottom:10px; }
+.hl  { color:#58a6ff; }
+.hl2 { color:#f0c93a; }
+.subtitle { color:var(--muted); font-size:.93rem; font-weight:300; }
+
+/* ── DEPT TABS ── */
+.dept-nav {
+  display:flex; flex-wrap:wrap; gap:8px;
+  justify-content:center;
+  max-width:960px; margin:0 auto 36px;
+}
+.dept-btn {
+  display:flex; align-items:center; gap:6px;
+  padding:8px 14px; border-radius:8px;
+  border:1px solid var(--border);
+  background:transparent; cursor:pointer;
+  font-family:'Sarabun',sans-serif;
+  font-size:.82rem; font-weight:600; color:var(--muted);
+  transition:all .22s ease; white-space:nowrap;
+}
+.dept-btn:hover { color:var(--text); border-color:rgba(255,255,255,0.2); background:rgba(255,255,255,0.04); }
+.dept-btn.active {
+  background:rgba(88,166,255,0.12);
+  border-color:rgba(88,166,255,0.35);
+  color:#58a6ff;
+}
+.dept-btn .dot {
+  width:7px; height:7px; border-radius:50%;
+  background:currentColor; flex-shrink:0;
+}
+
+/* ── DEPT SECTION ── */
+.dept-section { display:none; animation:fadeSection .3s ease; }
+.dept-section.active { display:block; }
+@keyframes fadeSection { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+.dept-header {
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:28px; padding:20px 24px;
+  background:var(--surface);
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+}
+.dept-icon { font-size:2.2rem; line-height:1; }
+.dept-name { font-size:1.35rem; font-weight:800; }
+.dept-desc { font-size:.87rem; color:var(--muted); font-weight:300; margin-top:3px; }
+.dept-count {
+  margin-left:auto;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; font-weight:700;
+  padding:5px 12px; border-radius:6px;
+  border:1px solid; flex-shrink:0;
+}
+
+/* ── GRID ── */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(310px,1fr));
+  gap:16px;
+}
+
+/* ── CARD ── */
+.card {
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  cursor:pointer;
+  transition:transform .28s cubic-bezier(.34,1.5,.64,1), box-shadow .28s ease, border-color .2s;
+  position:relative;
+}
+.card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 12px 28px rgba(0,0,0,.35);
+  border-color:rgba(255,255,255,.14);
+}
+.card.opened { border-color:var(--dc,.5); }
+
+.card-strip { height:3px; }
+
+.card-front { padding:18px 20px 14px; }
+.card-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+
+.prompt-num {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; font-weight:700; letter-spacing:2px;
+  padding:3px 9px; border-radius:5px;
+  background:rgba(255,255,255,.05);
+  color:var(--muted);
+}
+.use-tag {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; font-weight:700; letter-spacing:1px;
+  padding:3px 9px; border-radius:5px;
+  background:var(--tag-bg,rgba(88,166,255,.1));
+  color:var(--tag-c,#58a6ff);
+  border:1px solid var(--tag-border,rgba(88,166,255,.2));
+}
+
+.card-title-row { display:flex; align-items:flex-start; gap:10px; margin-bottom:8px; }
+.card-emoji { font-size:1.55rem; flex-shrink:0; line-height:1; }
+.card-title { font-size:.95rem; font-weight:700; color:#e6edf3; line-height:1.35; }
+.card-desc { font-size:.83rem; color:var(--muted); line-height:1.65; font-weight:300; }
+
+.expand-row {
+  display:flex; align-items:center; gap:5px;
+  margin-top:11px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  color:var(--dc,#58a6ff); opacity:.7; transition:opacity .2s, gap .2s;
+}
+.card:hover .expand-row { opacity:1; gap:8px; }
+.earr { font-size:11px; transition:transform .3s; }
+.card.opened .earr { transform:rotate(90deg); }
+
+/* ── DETAIL ── */
+.card-detail { max-height:0; overflow:hidden; transition:max-height .42s cubic-bezier(.4,0,.2,1); }
+.card.opened .card-detail { max-height:520px; }
+
+.detail-body { margin:0 20px 20px; padding-top:16px; border-top:1px dashed var(--border); }
+
+.prompt-label {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  color:var(--dc,#58a6ff); margin-bottom:8px;
+}
+
+.prompt-box {
+  background:rgba(0,0,0,.4);
+  border:1px solid rgba(255,255,255,.07);
+  border-left:3px solid var(--dc,#58a6ff);
+  border-radius:8px; padding:13px 14px 13px 14px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.76rem; color:#8ecaf5; line-height:1.75;
+  margin-bottom:12px; position:relative;
+}
+
+.copy-btn {
+  position:absolute; top:9px; right:9px;
+  background:rgba(88,166,255,.1);
+  border:1px solid rgba(88,166,255,.2);
+  color:#58a6ff; font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:1px;
+  padding:3px 9px; border-radius:4px;
+  cursor:pointer; font-weight:700; text-transform:uppercase;
+  transition:all .18s;
+}
+.copy-btn:hover { background:rgba(88,166,255,.2); }
+.copy-btn.ok { color:#3fb950; border-color:#3fb950; }
+
+.tip-lbl { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--muted); margin-bottom:5px; }
+.tip-txt { font-size:.82rem; color:#6a8299; line-height:1.65; font-weight:300; }
+
+/* ── FOOTER ── */
+.footer { text-align:center; margin-top:56px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:2px; }
+.footer strong { color:#58a6ff; }
+
+@media(max-width:600px){
+  body{ padding:28px 12px 60px; }
+  .grid{ grid-template-columns:1fr; }
+  .dept-nav{ gap:6px; }
+  .dept-btn{ font-size:.75rem; padding:6px 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">🏢 OFFICE AI TOOLKIT · 12 DEPARTMENTS</div>
+  <h1><span class="hl">AI Prompts</span><br>สำหรับ <span class="hl2">ทุกแผนกในออฟฟิศ</span></h1>
+  <p class="subtitle">เลือกแผนกด้านล่าง · คลิกการ์ดเพื่อดู Prompt · คัดลอกไปใช้ได้เลย</p>
+</div>
+
+<!-- DEPT NAVIGATION -->
+<nav class="dept-nav">
+  <button class="dept-btn active" onclick="showDept('hr',this)"><span class="dot" style="color:#f78166"></span>👥 HR</button>
+  <button class="dept-btn" onclick="showDept('admin',this)"><span class="dot" style="color:#79c0ff"></span>🗂 Admin</button>
+  <button class="dept-btn" onclick="showDept('account',this)"><span class="dot" style="color:#3fb950"></span>💰 Accounting</button>
+  <button class="dept-btn" onclick="showDept('supply',this)"><span class="dot" style="color:#f0c93a"></span>📦 Supply Chain</button>
+  <button class="dept-btn" onclick="showDept('cost',this)"><span class="dot" style="color:#d2a8ff"></span>📊 Cost Control</button>
+  <button class="dept-btn" onclick="showDept('eng',this)"><span class="dot" style="color:#ffa657"></span>⚙️ Engineering</button>
+  <button class="dept-btn" onclick="showDept('sub',this)"><span class="dot" style="color:#56d364"></span>🔨 Subcontract</button>
+  <button class="dept-btn" onclick="showDept('legal',this)"><span class="dot" style="color:#79c0ff"></span>⚖️ Legal & IC</button>
+  <button class="dept-btn" onclick="showDept('logistics',this)"><span class="dot" style="color:#ff7b72"></span>🚚 Logistics</button>
+  <button class="dept-btn" onclick="showDept('docctrl',this)"><span class="dot" style="color:#f0c93a"></span>📁 Doc Control</button>
+  <button class="dept-btn" onclick="showDept('hes',this)"><span class="dot" style="color:#3fb950"></span>🦺 HES Safety</button>
+  <button class="dept-btn" onclick="showDept('it',this)"><span class="dot" style="color:#58a6ff"></span>💻 IT</button>
+</nav>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  HR                                        -->
+<!-- ══════════════════════════════════════════ -->
+<div class="dept-section active" id="dept-hr">
+  <div class="dept-header" style="border-color:rgba(247,129,102,.2)">
+    <span class="dept-icon">👥</span>
+    <div>
+      <div class="dept-name" style="color:#f78166">Human Resources (HR)</div>
+      <div class="dept-desc">สรรหา พัฒนา และดูแลพนักงาน</div>
+    </div>
+    <div class="dept-count" style="color:#f78166;border-color:rgba(247,129,102,.3);background:rgba(247,129,102,.08)">10 Prompts</div>
+  </div>
+  <div class="grid" id="grid-hr"></div>
+</div>
+
+<!-- ADMIN -->
+<div class="dept-section" id="dept-admin">
+  <div class="dept-header" style="border-color:rgba(121,192,255,.2)">
+    <span class="dept-icon">🗂</span>
+    <div>
+      <div class="dept-name" style="color:#79c0ff">Admin Officer</div>
+      <div class="dept-desc">บริหารจัดการงานทั่วไปและสำนักงาน</div>
+    </div>
+    <div class="dept-count" style="color:#79c0ff;border-color:rgba(121,192,255,.3);background:rgba(121,192,255,.08)">10 Prompts</div>
+  </div>
+  <div class="grid" id="grid-admin"></div>
+</div>
+
+<!-- ACCOUNT -->
+<div class="dept-section" id="dept-account">
+  <div class="dept-header" style="border-color:rgba(63,185,80,.2)">
+    <span class="dept-icon">💰</span>
+    <div>
+      <div class="dept-name" style="color:#3fb950">Accounting & Finance</div>
+      <div class="dept-desc">บัญชี การเงิน และรายงานทางการเงิน</div>
+    </div>
+    <div class="dept-count" style="color:#3fb950;border-color:rgba(63,185,80,.3);background:rgba(63,185,80,.08)">10 Prompts</div>
+  </div>
+  <div class="grid" id="grid-account"></div>
+</div>
+
+<!-- SUPPLY -->
+<div class="dept-section" id="dept-supply">
+  <div class="dept-header" style="border-color:rgba(240,201,58,.2)">
+    <span class="dept-icon">📦</span>
+    <div>
+      <div class="dept-name" style="color:#f0c93a">Supply Chain & Procurement</div>
+      <div class="dept-desc">จัดซื้อ คัดเลือกผู้ขาย และบริหาร Supply Chain</div>
+    </div>
+    <div class="dept-count" style="color:#f0c93a;border-color:rgba(240,201,58,.3);background:rgba(240,201,58,.08)">10 Prompts</div>
+  </div>
+  <div class="grid" id="grid-supply"></div>
+</div>
+
+<!-- COST -->
+<div class="dept-section" id="dept-cost">
+  <div class="dept-header" style="border-color:rgba(210,168,255,.2)">
+    <span class="dept-icon">📊</span>
+    <div>
+      <div class="dept-name" style="color:#d2a8ff">Project Cost Control</div>
+      <div class="dept-desc">ควบคุมต้นทุน งบประมาณ และ EVM</div>
+    </div>
+    <div class="dept-count" style="color:#d2a8ff;border-color:rgba(210,168,255,.3);background:rgba(210,168,255,.08)">10 Prompts</div>
+  </div>
+  <div class="grid" id="grid-cost"></div>
+</div>
+
+<!-- ENG -->
+<div class="dept-section" id="dept-eng">
+  <div class="dept-header" style="border-color:rgba(255,166,87,.2)">
+    <span class="dept-icon">⚙️</span>
+    <div>
+      <div class="dept-name" style="color:#ffa657">Civil & Engineering</div>
+      <div class="dept-desc">งานวิศวกรรมโยธา ออกแบบ และควบคุมงาน</div>
+    </div>
+    <div class="dept-count" style="color:#ffa657;border-color:rgba(255,166,87,.3);background:rgba(255,166,87,.08)">10 Prompts</div>
+  </div>
+  <div class="grid" id="grid-eng"></div>
+</div>
+
+<!-- SUB -->
+<div class="dept-section" id="dept-sub">
+  <div class="dept-header" style="border-color:rgba(86,211,100,.2)">
+    <span class="dept-icon">🔨</span>
+    <div>
+      <div class="dept-name" style="color:#56d364">Subcontract Management</div>
+      <div class="dept-desc">บริหารสัญญาผู้รับเหมาช่วงและการว่าจ้าง</div>
+    </div>
+    <div class="dept-count" style="color:#56d364;border-color:rgba(86,211,100,.3);background:rgba(86,211,100,.08)">10 Prompts</div>
+  </div>
+  <div class="grid" id="grid-sub"></div>
+</div>
+
+<!-- LEGAL -->
+<div class="dept-section" id="dept-legal">
+  <div class="dept-header" style="border-color:rgba(121,192,255,.2)">
+    <span class="dept-icon">⚖️</span>
+    <div>
+      <div class="dept-name" style="color:#79c0ff">Internal Control & Legal</div>
+      <div class="dept-desc">กฎหมาย การควบคุมภายใน และ Compliance</div>
+    </div>
+    <div class="dept-count" style="color:#79c0ff;border-color:rgba(121,192,255,.3);background:rgba(121,192,255,.08)">10 Prompts</div>
+  </div>
+  <div class="grid" id="grid-legal"></div>
+</div>
+
+<!-- LOGISTICS -->
+<div class="dept-section" id="dept-logistics">
+  <div class="dept-header" style="border-color:rgba(255,123,114,.2)">
+    <span class="dept-icon">🚚</span>
+    <div>
+      <div class="dept-name" style="color:#ff7b72">Logistics</div>
+      <div class="dept-desc">ขนส่ง คลังสินค้า และการกระจายสินค้า</div>
+    </div>
+    <div class="dept-count" style="color:#ff7b72;border-color:rgba(255,123,114,.3);background:rgba(255,123,114,.08)">10 Prompts</div>
+  </div>
+  <div class="grid" id="grid-logistics"></div>
+</div>
+
+<!-- DOC CTRL -->
+<div class="dept-section" id="dept-docctrl">
+  <div class="dept-header" style="border-color:rgba(240,201,58,.2)">
+    <span class="dept-icon">📁</span>
+    <div>
+      <div class="dept-name" style="color:#f0c93a">Document Control</div>
+      <div class="dept-desc">บริหารเอกสาร จัดเก็บ และควบคุมคุณภาพเอกสาร</div>
+    </div>
+    <div class="dept-count" style="color:#f0c93a;border-color:rgba(240,201,58,.3);background:rgba(240,201,58,.08)">10 Prompts</div>
+  </div>
+  <div class="grid" id="grid-docctrl"></div>
+</div>
+
+<!-- HES -->
+<div class="dept-section" id="dept-hes">
+  <div class="dept-header" style="border-color:rgba(63,185,80,.2)">
+    <span class="dept-icon">🦺</span>
+    <div>
+      <div class="dept-name" style="color:#3fb950">HES Safety</div>
+      <div class="dept-desc">Health, Environment & Safety — ความปลอดภัยในการทำงาน</div>
+    </div>
+    <div class="dept-count" style="color:#3fb950;border-color:rgba(63,185,80,.3);background:rgba(63,185,80,.08)">10 Prompts</div>
+  </div>
+  <div class="grid" id="grid-hes"></div>
+</div>
+
+<!-- IT -->
+<div class="dept-section" id="dept-it">
+  <div class="dept-header" style="border-color:rgba(88,166,255,.2)">
+    <span class="dept-icon">💻</span>
+    <div>
+      <div class="dept-name" style="color:#58a6ff">Information Technology (IT)</div>
+      <div class="dept-desc">Infrastructure, Support, Security, และพัฒนาระบบ</div>
+    </div>
+    <div class="dept-count" style="color:#58a6ff;border-color:rgba(88,166,255,.3);background:rgba(88,166,255,.08)">10 Prompts</div>
+  </div>
+  <div class="grid" id="grid-it"></div>
+</div>
+
+<div class="footer"><strong>AI PROMPTS BY DEPARTMENT</strong> &nbsp;·&nbsp; 120 READY-TO-USE PROMPTS &nbsp;·&nbsp; CLAUDE AI 2026</div>
+
+<script>
+/* ── DATA ── */
+const depts = {
+
+hr: {
+  color:'#f78166', tagBg:'rgba(247,129,102,.1)', tagBorder:'rgba(247,129,102,.25)',
+  cards:[
+    { num:'HR-01', emoji:'📝', tag:'สรรหา', title:'เขียนประกาศรับสมัครงาน (JD)', desc:'สร้าง JD ที่ดึงดูดผู้สมัครคุณภาพสูงได้ทันที',
+      prompt:`ช่วยเขียน Job Description สำหรับตำแหน่ง [ชื่อตำแหน่ง]\nแผนก: [แผนก]\nทักษะหลักที่ต้องการ: [3-5 ข้อ]\nประสบการณ์: [X ปี]\nรูปแบบงาน: [Onsite/Hybrid/Remote]\n\nใส่หัวข้อ: บทบาท / ความรับผิดชอบ / คุณสมบัติ / สวัสดิการ\nใช้ภาษาที่ทันสมัยและดึงดูด ไม่เป็นทางการจนเกินไป`,
+      tip:'เพิ่ม Culture ของบริษัทเพื่อให้ผู้สมัครรู้ว่า Fit กับทีมไหม' },
+    { num:'HR-02', emoji:'🎤', tag:'สัมภาษณ์', title:'สร้างคำถาม Interview เจาะลึก', desc:'ออกแบบคำถามที่วัด Competency และ Culture Fit ได้จริง',
+      prompt:`สร้าง Interview Questions สำหรับตำแหน่ง [ชื่อตำแหน่ง]\nระดับ: [Junior/Mid/Senior]\nทักษะที่ต้องการวัด: [ระบุ 3 ด้าน]\n\nขอ 3 ประเภท:\n1. Behavioral (STAR method) - 3 ข้อ\n2. Situational - 2 ข้อ\n3. Technical - 2 ข้อ\n\nพร้อม Red Flag Answers ที่ควรระวัง`,
+      tip:'ขอเพิ่ม Scoring Rubric 1-5 สำหรับแต่ละคำถาม' },
+    { num:'HR-03', emoji:'📋', tag:'ประเมิน', title:'สร้างแบบฟอร์ม KPI / Performance Review', desc:'ออกแบบ Template ประเมินผลงานที่ยุติธรรมและวัดได้',
+      prompt:`สร้าง Performance Review Form สำหรับ [ตำแหน่ง]\nรอบการประเมิน: [รายไตรมาส/รายปี]\nหัวข้อที่ต้องประเมิน: [ระบุ]\n\nสร้าง:\n- KPI หลัก 5 ข้อพร้อม Target ที่วัดได้\n- Rating Scale 1-5 พร้อมคำอธิบาย\n- หัวข้อ Self-Assessment\n- ช่อง Development Plan`,
+      tip:'ขอให้ AI ปรับน้ำหนัก KPI ตาม Priority ของแต่ละตำแหน่ง' },
+    { num:'HR-04', emoji:'💬', tag:'Feedback', title:'เตรียมบทสนทนา Feedback ที่ยาก', desc:'Draft คำพูดสำหรับบอก Feedback เชิงลบอย่างสร้างสรรค์',
+      prompt:`ช่วย Draft บทสนทนา Feedback สำหรับ:\nพนักงาน: [ตำแหน่ง]\nพฤติกรรมที่ต้องแก้: [อธิบายพฤติกรรม]\nผลกระทบที่เกิด: [ผลกระทบต่อทีม/งาน]\n\nใช้ SBI Framework (Situation-Behavior-Impact)\nโทน: ตรงประเด็น ไม่โจมตีตัวตน สร้างสรรค์\nจบด้วย Action Plan ที่ชัดเจน`,
+      tip:'ขอให้ AI เตรียม "คำตอบที่พนักงานอาจโต้แย้ง" ไว้ล่วงหน้า' },
+    { num:'HR-05', emoji:'🎓', tag:'Training', title:'ออกแบบแผนพัฒนาพนักงาน (IDP)', desc:'สร้าง Individual Development Plan ที่ตรงกับเป้าหมายพนักงาน',
+      prompt:`สร้าง Individual Development Plan (IDP) สำหรับ:\nพนักงาน: [ตำแหน่งปัจจุบัน]\nเป้าหมาย: [ต้องการเติบโตเป็น]\nจุดอ่อนที่ต้องพัฒนา: [ระบุ]\nระยะเวลา: [6 เดือน / 1 ปี]\n\nแบ่งเป็น: Short-term / Mid-term / Long-term Goals\nพร้อมกิจกรรมพัฒนา, Timeline, และวิธีวัดผล`,
+      tip:'เพิ่ม "ทรัพยากรที่บริษัทสนับสนุนได้" เพื่อให้แผนเป็นไปได้จริง' },
+    { num:'HR-06', emoji:'📊', tag:'รายงาน', title:'สรุปข้อมูล Turnover / Headcount', desc:'แปลงข้อมูล HR ดิบให้เป็น Insight ที่ผู้บริหารเข้าใจง่าย',
+      prompt:`วิเคราะห์ข้อมูล HR ต่อไปนี้:\n[วาง Data Turnover / Headcount]\n\nช่วยสรุป:\n1. Turnover Rate เทียบ Benchmark อุตสาหกรรม\n2. แผนกที่มีปัญหามากที่สุด\n3. Pattern ที่น่าสนใจ\n4. ข้อเสนอแนะ 3 ข้อที่ควร Action ทันที`,
+      tip:'บอก Industry ที่บริษัทอยู่เพื่อให้ Benchmark ถูกต้อง' },
+    { num:'HR-07', emoji:'📧', tag:'สื่อสาร', title:'เขียนประกาศภายในองค์กร', desc:'สร้าง Internal Communication ที่ชัดเจนและพนักงานอยากอ่าน',
+      prompt:`เขียนประกาศภายในสำหรับ: [หัวข้อประกาศ]\nกลุ่มเป้าหมาย: [พนักงานทั้งหมด / แผนกไหน]\nสาระสำคัญ: [ระบุ]\nวันมีผล: [วันที่]\n\nโทน: เป็นทางการแต่เข้าใจง่าย อบอุ่น ไม่แข็งกระด้าง\nรวม FAQ ที่พนักงานอาจสงสัย 3 ข้อ`,
+      tip:'ขอ Version ภาษาอังกฤษด้วยถ้ามีพนักงานต่างชาติ' },
+    { num:'HR-08', emoji:'🤝', tag:'Onboarding', title:'สร้าง Onboarding Checklist พนักงานใหม่', desc:'ออกแบบขั้นตอน Onboarding ที่ทำให้พนักงานใหม่รู้สึก Welcome',
+      prompt:`สร้าง Onboarding Checklist สำหรับ [ตำแหน่ง]\nแผนก: [แผนก]\nวันแรก / สัปดาห์แรก / เดือนแรก\n\nรวม:\n- เอกสารที่ต้องเตรียม\n- คนที่ต้องพบ (Stakeholders)\n- ระบบที่ต้องเข้าถึง\n- เป้าหมาย 30-60-90 วันแรก`,
+      tip:'ขอให้ AI ทำ "Welcome Message" จาก CEO/Manager ด้วย' },
+    { num:'HR-09', emoji:'⚖️', tag:'กฎหมาย', title:'ร่างหนังสือเตือนหรือ PIP', desc:'สร้าง Performance Improvement Plan หรือ Warning Letter ที่ถูกต้อง',
+      prompt:`ร่าง Performance Improvement Plan (PIP) สำหรับ:\nตำแหน่ง: [ตำแหน่ง]\nปัญหาที่พบ: [อธิบายพฤติกรรม/ผลงาน]\nครั้งที่เตือน: [ครั้งที่]\n\nรวม: เป้าหมายที่วัดได้, Timeline 30/60/90 วัน\nผลที่จะเกิดถ้าไม่ปรับปรุง\n\nหมายเหตุ: ตรวจสอบกับนักกฎหมายแรงงานก่อนใช้จริง`,
+      tip:'ระบุกฎหมายแรงงานของประเทศที่ใช้บังคับเพื่อให้ถูก Format' },
+    { num:'HR-10', emoji:'🏆', tag:'Engagement', title:'ออกแบบแบบสำรวจความผูกพัน (Engagement Survey)', desc:'สร้างแบบสำรวจที่ได้ข้อมูลจริงจากพนักงาน',
+      prompt:`สร้าง Employee Engagement Survey\nบริษัทขนาด: [จำนวนพนักงาน]\nประเด็นที่ต้องการสำรวจ: [ระบุ เช่น Work-life balance, Manager, Culture]\n\nสร้าง 15 คำถาม แบ่งเป็น:\n- Likert Scale 1-5 (10 ข้อ)\n- Open-ended (3 ข้อ)\n- eNPS Score (2 ข้อ)\nพร้อมวิธีแปลผลคะแนน`,
+      tip:'ขอให้ AI แนะนำ Action ที่ควรทำตาม Score Range ด้วย' },
+  ]
+},
+
+admin: {
+  color:'#79c0ff', tagBg:'rgba(121,192,255,.1)', tagBorder:'rgba(121,192,255,.25)',
+  cards:[
+    { num:'AD-01', emoji:'📅', tag:'จัดการ', title:'สร้าง Agenda ประชุมที่มีประสิทธิภาพ', desc:'ออกแบบ Meeting Agenda พร้อม Time-box ที่ทุกคน Follow ได้',
+      prompt:`สร้าง Meeting Agenda สำหรับ:\nหัวข้อ: [เรื่องประชุม]\nระยะเวลา: [X นาที]\nผู้เข้าร่วม: [จำนวนและระดับ]\nGoal: [Decision/Update/Brainstorm]\n\nจัด Time-box แต่ละหัวข้อ ระบุว่าใครเป็น Owner\nเพิ่ม Pre-read ที่ควรส่งล่วงหน้า`,
+      tip:'ขอ Version "15-Minute Stand-up" สำหรับประชุมด่วน' },
+    { num:'AD-02', emoji:'📝', tag:'MoM', title:'สรุปรายงานการประชุม (MoM) จาก Notes', desc:'เอา Notes ยุ่งเหยิงมาให้ AI จัดระเบียบเป็น MoM พร้อม Action',
+      prompt:`นี่คือ Notes การประชุม: [วาง Notes]\n\nสรุปเป็น Minutes of Meeting โดยแบ่งเป็น:\n1. วัน/เวลา/ผู้เข้าร่วม\n2. สรุปประเด็นหลัก\n3. มติที่ประชุม\n4. Action Items (ผู้รับผิดชอบ + Due Date)\n5. ประเด็นค้างและครั้งถัดไป`,
+      tip:'ใส่ชื่อย่อผู้เข้าร่วมเพื่อให้ AI assign ความรับผิดชอบได้ถูก' },
+    { num:'AD-03', emoji:'✈️', tag:'เดินทาง', title:'จัดแผนการเดินทาง Business Trip', desc:'วางแผน Itinerary และ Checklist การเดินทางธุรกิจครบถ้วน',
+      prompt:`ช่วยวางแผน Business Trip:\nปลายทาง: [เมือง/ประเทศ]\nวันเดินทาง: [วันที่]\nระยะเวลา: [X วัน]\nวัตถุประสงค์: [ประชุม/Training/Site Visit]\n\nสร้าง: Day-by-day Itinerary + Packing Checklist\n+ เอกสารที่ต้องเตรียม + Pre-trip Checklist`,
+      tip:'ขอให้ AI คำนวณค่าใช้จ่ายเบื้องต้นตาม Per Diem ด้วย' },
+    { num:'AD-04', emoji:'📋', tag:'จัดซื้อ', title:'เขียน Request เพื่อขออนุมัติจัดซื้อ', desc:'ร่าง Purchase Request หรือ Memo ขออนุมัติที่ผู้บริหารอนุมัติเร็ว',
+      prompt:`ร่าง Memo ขออนุมัติจัดซื้อ:\nรายการ: [สิ่งที่ต้องการซื้อ]\nมูลค่า: [งบประมาณ]\nเหตุผลความจำเป็น: [อธิบาย]\nผู้ขายที่พิจารณา: [ชื่อ Vendor]\n\nเขียนเป็น Formal Memo พร้อม Cost-Benefit\nระบุ Risk ถ้าไม่ได้รับอนุมัติ`,
+      tip:'เพิ่ม ROI หรือประโยชน์ที่วัดได้เพื่อให้อนุมัติง่ายขึ้น' },
+    { num:'AD-05', emoji:'🏢', tag:'สำนักงาน', title:'ร่าง Office Policy / Work Regulation', desc:'สร้างระเบียบสำนักงานที่ชัดเจนและพนักงานยอมรับได้',
+      prompt:`ร่าง Office Policy สำหรับ: [หัวข้อ เช่น WFH / Dress Code / Meeting Room]\nบริษัทประเภท: [อุตสาหกรรม]\nจำนวนพนักงาน: [X คน]\nCulture: [Corporate/Startup/Mixed]\n\nรวม: วัตถุประสงค์ / ขอบเขต / ข้อกำหนด\n/ ข้อยกเว้น / บทลงโทษ / วันมีผล`,
+      tip:'ขอ FAQ พร้อม Policy เพื่อตอบคำถามพนักงานล่วงหน้า' },
+    { num:'AD-06', emoji:'📦', tag:'Inventory', title:'จัดทำ Inventory List และ Reorder Point', desc:'ระบบติดตามของใช้สำนักงานให้ไม่ขาดสต็อก',
+      prompt:`ช่วยสร้างระบบ Office Inventory:\nรายการของใช้ที่มี: [รายชื่อสินค้า]\nอัตราการใช้ต่อเดือน: [X ชิ้น/เดือน]\nLead Time Supplier: [X วัน]\n\nสร้าง: Inventory Tracking Template\n+ Reorder Point สำหรับแต่ละรายการ\n+ Monthly Order List`,
+      tip:'ขอให้ AI คำนวณ Safety Stock ด้วย' },
+    { num:'AD-07', emoji:'🎉', tag:'Event', title:'วางแผนจัดงาน Event ภายในบริษัท', desc:'ออกแบบ Event Plan ครบตั้งแต่งบประมาณถึงวันงาน',
+      prompt:`วางแผนจัดงาน: [ชื่องาน]\nวันที่: [วันที่]\nจำนวนผู้เข้าร่วม: [X คน]\nงบประมาณ: [งบประมาณ]\nวัตถุประสงค์: [Team Building/Party/Training]\n\nสร้าง: Timeline 8 สัปดาห์ก่อนงาน\n+ Checklist แต่ละสัปดาห์ + Run of Show วันงาน`,
+      tip:'ขอ Backup Plan สำหรับ Risk แต่ละด้านด้วย' },
+    { num:'AD-08', emoji:'📊', tag:'รายงาน', title:'จัดทำรายงาน Monthly Admin Summary', desc:'สรุปงาน Admin ประจำเดือนให้ผู้บริหารเห็นภาพรวมได้ทันที',
+      prompt:`สร้าง Monthly Admin Report Template สำหรับ:\nหัวข้อที่ต้องรายงาน: [ค่าใช้จ่าย / Event / Facility / Issue]\n\nรูปแบบ: Executive Summary 1 หน้า\nแต่ละหัวข้อ: ตัวชี้วัด + สิ่งที่ทำ + ปัญหา + แผนถัดไป\nใส่ Traffic Light Status (🟢🟡🔴)`,
+      tip:'ขอให้ AI เพิ่ม YoY Comparison สำหรับค่าใช้จ่าย' },
+    { num:'AD-09', emoji:'🔧', tag:'Facility', title:'ติดตาม Maintenance และ Repair Request', desc:'ระบบจัดการงานซ่อมบำรุงสำนักงานที่ไม่ตกหล่น',
+      prompt:`ช่วยสร้าง Maintenance Tracking System:\nประเภทอุปกรณ์: [รายการ]\nความถี่ PM: [รายเดือน/รายไตรมาส]\nผู้รับผิดชอบ: [ชื่อ/แผนก]\n\nสร้าง: PM Schedule ทั้งปี\n+ Work Order Template\n+ Vendor Contact List Format\n+ Monthly Maintenance Report`,
+      tip:'ขอให้ AI ประมาณงบ Maintenance ประจำปีด้วย' },
+    { num:'AD-10', emoji:'🤝', tag:'Vendor', title:'ประเมินและเปรียบเทียบ Vendor สำนักงาน', desc:'Vendor Comparison Matrix ที่ช่วยตัดสินใจเลือก Supplier ได้ถูกต้อง',
+      prompt:`เปรียบเทียบ Vendor สำหรับ [สินค้า/บริการ]:\nVendor A: [ข้อมูล ราคา เงื่อนไข]\nVendor B: [ข้อมูล ราคา เงื่อนไข]\nVendor C: [ข้อมูล ราคา เงื่อนไข]\n\nเกณฑ์: ราคา คุณภาพ ความน่าเชื่อถือ Service\nทำ Weighted Scoring Matrix และแนะนำพร้อมเหตุผล`,
+      tip:'ขอ Negotiation Points สำหรับ Vendor ที่เลือกด้วย' },
+  ]
+},
+
+account: {
+  color:'#3fb950', tagBg:'rgba(63,185,80,.1)', tagBorder:'rgba(63,185,80,.25)',
+  cards:[
+    { num:'AC-01', emoji:'📊', tag:'รายงาน', title:'สรุปงบการเงินให้ผู้บริหารเข้าใจง่าย', desc:'แปลง Financial Statement เป็น Narrative ที่ Non-Finance อ่านเข้าใจ',
+      prompt:`แปลงงบการเงินต่อไปนี้เป็น Executive Summary:\n[วาง P&L / Balance Sheet]\n\nอธิบายในภาษาที่ Non-Finance เข้าใจ:\n1. ภาพรวมสุขภาพทางการเงิน\n2. จุดที่ดีและน่ากังวล\n3. เทียบกับเดือน/ปีก่อน\n4. สิ่งที่ผู้บริหารควรตัดสินใจ`,
+      tip:'ขอให้ AI ใช้ Analogy หรือภาษาพูดเพื่อให้เข้าใจง่ายขึ้น' },
+    { num:'AC-02', emoji:'💳', tag:'AP/AR', title:'ติดตาม Outstanding Invoice และ Aging', desc:'สรุปสถานะลูกหนี้/เจ้าหนี้ที่ต้อง Follow Up เร่งด่วน',
+      prompt:`วิเคราะห์ AR Aging Report ต่อไปนี้:\n[วาง Aging Data]\n\nสรุป:\n1. ยอดค้างชำระที่ Critical (90+ วัน)\n2. ลูกค้าที่ต้อง Follow Up ด่วน Top 5\n3. ร่าง Collection Email สำหรับแต่ละกลุ่ม\n4. แนวโน้ม Bad Debt`,
+      tip:'ขอ Template Email ทวงหนี้ 3 ระดับ: แจ้งเตือน, กดดัน, ขั้นเด็ดขาด' },
+    { num:'AC-03', emoji:'📋', tag:'Audit', title:'เตรียม Working Paper สำหรับ Audit', desc:'จัดทำเอกสารสนับสนุนการตรวจสอบบัญชีให้ครบถ้วน',
+      prompt:`ช่วยสร้าง Audit Working Paper Checklist สำหรับ:\nประเภท Audit: [Internal/External/Tax]\nรอบบัญชี: [ปี/ไตรมาส]\nบัญชีที่ต้องเตรียม: [รายการ]\n\nระบุ: เอกสารที่ต้องเตรียม / Format / แหล่งข้อมูล\n/ Reconciliation ที่ต้องทำ / Timeline`,
+      tip:'ขอให้ AI เพิ่ม Common Audit Findings ที่ควรป้องกันไว้ล่วงหน้า' },
+    { num:'AC-04', emoji:'💰', tag:'งบประมาณ', title:'จัดทำ Budget Proposal ประจำปี', desc:'สร้างโครงสร้าง Annual Budget ที่มีเหตุผลและผ่านการอนุมัติได้',
+      prompt:`ช่วยจัดทำ Annual Budget Proposal สำหรับ:\nแผนก: [แผนก]\nงบปีที่แล้ว: [ตัวเลข]\nเป้าหมายปีใหม่: [ระบุ]\nรายการหลัก: [OPEX / CAPEX]\n\nสร้าง: Budget Breakdown พร้อม Justification\n+ Assumption ที่ใช้ + Sensitivity Analysis`,
+      tip:'ขอให้ AI เตรียม "คำตอบสำหรับคำถามจาก CFO" ด้วย' },
+    { num:'AC-05', emoji:'🧾', tag:'ภาษี', title:'สรุปรายการภาษีที่ต้องยื่นประจำเดือน', desc:'Checklist ภาษีรายเดือนที่ไม่ตกหล่นรายการสำคัญ',
+      prompt:`สร้าง Monthly Tax Compliance Checklist:\nประเภทธุรกิจ: [บจก./หจก./บุคคล]\nรายได้ประมาณ: [ช่วง]\nภาษีที่เกี่ยวข้อง: [VAT, WHT, CIT, PND]\n\nสร้าง: Calendar ภาษีทั้งปี + Due Dates\n+ เอกสารที่ต้องแนบแต่ละรายการ\n+ Penalty ถ้าส่งล่าช้า`,
+      tip:'ระบุประเทศเพื่อให้ภาษีตรงกับกฎหมายท้องถิ่น' },
+    { num:'AC-06', emoji:'📈', tag:'วิเคราะห์', title:'วิเคราะห์ Variance Budget vs Actual', desc:'อธิบายสาเหตุความเบี่ยงเบนและแนวทางแก้ไข',
+      prompt:`วิเคราะห์ Variance ต่อไปนี้:\nBudget: [ตัวเลข]\nActual: [ตัวเลข]\nหมวดหมู่: [รายการค่าใช้จ่าย]\n\nอธิบาย:\n1. Variance % แต่ละรายการ\n2. สาเหตุที่น่าจะเป็น\n3. Favorable vs Unfavorable\n4. ข้อเสนอ Corrective Action`,
+      tip:'ขอให้ AI Draft คำอธิบายสำหรับส่ง CFO ด้วย' },
+    { num:'AC-07', emoji:'💵', tag:'เงินสด', title:'ทำ Cash Flow Forecast รายสัปดาห์', desc:'วางแผนกระแสเงินสดไม่ให้ขาดสภาพคล่องกะทันหัน',
+      prompt:`สร้าง Weekly Cash Flow Forecast:\nยอดเงินสดปัจจุบัน: [จำนวน]\nรายรับที่คาดหวัง: [รายการ]\nรายจ่ายที่กำหนด: [รายการ]\nระยะเวลา: [4-8 สัปดาห์]\n\nระบุ: สัปดาห์ที่อาจขาดเงินสด\nวิธีบริหารช่วงวิกฤต + Credit Line ที่ควรเตรียม`,
+      tip:'ขอให้ AI เพิ่ม Scenario Analysis (Best/Base/Worst case) ด้วย' },
+    { num:'AC-08', emoji:'🔍', tag:'ตรวจสอบ', title:'ร่าง Memo อธิบายรายการผิดปกติในบัญชี', desc:'สื่อสารข้อค้นพบทางบัญชีให้ผู้บริหารเข้าใจและดำเนินการได้',
+      prompt:`ช่วยร่าง Memo อธิบายรายการผิดปกติ:\nรายการที่พบ: [อธิบายรายการ]\nมูลค่า: [จำนวน]\nช่วงเวลา: [วันที่]\nผลกระทบต่องบการเงิน: [อธิบาย]\n\nเขียนเป็น Formal Memo: สรุปปัญหา + ผลกระทบ\n+ Root Cause + แนวทางแก้ไข + Prevention`,
+      tip:'ขอ Version สำหรับ Internal และ External Audit แยกกัน' },
+    { num:'AC-09', emoji:'📑', tag:'สัญญา', title:'ตรวจสอบเงื่อนไขการชำระเงินในสัญญา', desc:'วิเคราะห์ Payment Terms และ Penalty Clause ในสัญญา',
+      prompt:`วิเคราะห์เงื่อนไขทางการเงินในสัญญาต่อไปนี้:\n[วางข้อความสัญญา]\n\nสรุป:\n1. Payment Terms และ Due Date\n2. Penalty / Late Payment Clause\n3. Discount / Early Payment Term\n4. ความเสี่ยงทางการเงินที่ควรระวัง\n5. ข้อที่ควรขอเจรจา Renegotiate\n\nหมายเหตุ: ตรวจสอบกับนักกฎหมายก่อนเซ็นสัญญา`,
+      tip:'ขอให้ AI เปรียบเทียบกับ Industry Standard Payment Terms' },
+    { num:'AC-10', emoji:'🤖', tag:'อัตโนมัติ', title:'วางแผน Automation งานบัญชีซ้ำซาก', desc:'ระบุงานที่ควร Automate เพื่อลด Manual Work และ Error',
+      prompt:`วิเคราะห์งานบัญชีต่อไปนี้เพื่อหา Automation Opportunity:\n[รายการงานประจำที่ทำซ้ำ]\n\nแนะนำ:\n1. งานที่ควร Automate ก่อน (High Impact)\n2. Tool ที่เหมาะสม (Excel Macro / RPA / ERP)\n3. ประมาณเวลาที่ประหยัดได้\n4. ขั้นตอนการ Implement แบบ Low-risk`,
+      tip:'ขอ ROI Calculation ของแต่ละ Automation ด้วย' },
+  ]
+},
+
+supply: {
+  color:'#f0c93a', tagBg:'rgba(240,201,58,.1)', tagBorder:'rgba(240,201,58,.25)',
+  cards:[
+    { num:'SC-01', emoji:'📋', tag:'RFQ', title:'เขียน RFQ / RFP ให้ Vendor', desc:'สร้างเอกสาร Request for Quotation ที่ได้ข้อมูลครบจาก Supplier',
+      prompt:`สร้าง RFQ สำหรับ:\nสินค้า/บริการ: [รายการ]\nคุณสมบัติทางเทคนิค: [Spec]\nปริมาณ: [จำนวน]\nต้องการภายใน: [วันที่]\n\nรวม: Technical Spec / Commercial Terms\n/ Delivery Requirement / Evaluation Criteria\n/ Deadline ส่ง Quotation`,
+      tip:'ขอให้ AI เพิ่ม Vendor Evaluation Scorecard ด้วย' },
+    { num:'SC-02', emoji:'⚖️', tag:'Negotiation', title:'เตรียมกลยุทธ์เจรจาต่อรองราคา', desc:'วางแผน Negotiation Strategy ที่ได้ราคาดีและรักษาความสัมพันธ์',
+      prompt:`ช่วยวางแผน Negotiation กับ Supplier:\nสินค้า: [รายการ]\nราคาที่ Vendor เสนอ: [ราคา]\nราคา Target: [ราคาที่ต้องการ]\nอำนาจต่อรองของเรา: [ปริมาณ / ระยะสัมพันธ์]\n\nแนะนำ: Negotiation Tactics + Opening Position\n+ BATNA + Concession Plan`,
+      tip:'ขอ Script บทสนทนาจริงสำหรับฝึกซ้อมก่อนเจรจา' },
+    { num:'SC-03', emoji:'🔍', tag:'Vendor', title:'ประเมิน Vendor Qualification', desc:'สร้างระบบคัดเลือก Supplier ที่มีมาตรฐานและโปร่งใส',
+      prompt:`สร้าง Vendor Qualification Checklist สำหรับ:\nประเภท Vendor: [วัสดุก่อสร้าง / IT / Services]\nระดับความเสี่ยง: [High/Medium/Low]\n\nรวม: เกณฑ์การประเมิน (Financial / Technical / QA)\n+ Document ที่ต้องขอ + Scoring Weight\n+ Minimum Passing Score`,
+      tip:'ขอให้ AI เพิ่ม Red Flag List ที่ทำให้ไม่ผ่าน Qualification' },
+    { num:'SC-04', emoji:'📦', tag:'PO', title:'ร่าง Purchase Order Terms & Conditions', desc:'สร้าง PO ที่มีเงื่อนไขคุ้มครองบริษัทครบถ้วน',
+      prompt:`ร่าง Purchase Order Standard Terms สำหรับ:\nประเภทสินค้า: [สินค้า/บริการ/งานก่อสร้าง]\nมูลค่า: [ช่วงราคา]\n\nรวม Clause: Delivery / Quality / Warranty\n/ Payment / Penalty / Force Majeure\n/ Termination / IP Ownership\n\nหมายเหตุ: ตรวจสอบกับนักกฎหมายก่อนใช้จริง`,
+      tip:'ขอ Version ภาษาอังกฤษสำหรับ Vendor ต่างประเทศ' },
+    { num:'SC-05', emoji:'📊', tag:'วิเคราะห์', title:'วิเคราะห์ Spend Analysis', desc:'หาโอกาสลดต้นทุนจากข้อมูลการจัดซื้อ',
+      prompt:`วิเคราะห์ Procurement Spend Data:\n[วาง Spend Data]\n\nวิเคราะห์:\n1. Top Spend Category (Pareto 80/20)\n2. Supplier Consolidation Opportunity\n3. รายการที่ควร Renegotiate\n4. ประมาณ Cost Saving ที่ทำได้\n5. แนะนำ Sourcing Strategy`,
+      tip:'ขอ Savings Roadmap พร้อม Priority และ Timeline' },
+    { num:'SC-06', emoji:'⚡', tag:'เร่งด่วน', title:'จัดการ Emergency Purchase ที่ถูกต้อง', desc:'ขั้นตอน Fast Track Procurement ที่ยังมีการควบคุมภายใน',
+      prompt:`สร้าง Emergency Purchase Procedure:\nสินค้าที่ต้องการด่วน: [รายการ]\nเหตุฉุกเฉิน: [อธิบายสถานการณ์]\nงบประมาณ: [วงเงิน]\n\nออกแบบ: Fast-track Process + Approval Matrix\n+ เอกสารที่ต้องทำภายหลัง\n+ วิธี Document ให้ผ่าน Audit`,
+      tip:'ขอให้ AI เพิ่ม Lesson Learned Template เพื่อป้องกันซ้ำ' },
+    { num:'SC-07', emoji:'🌍', tag:'Import', title:'วางแผนนำเข้าสินค้าจากต่างประเทศ', desc:'Checklist Import ครบตั้งแต่ Incoterms ถึงพิธีศุลกากร',
+      prompt:`วางแผนนำเข้าสินค้า:\nสินค้า: [รายการ]\nประเทศต้นทาง: [ประเทศ]\nปริมาณ: [น้ำหนัก/ปริมาตร]\nIncoterms ที่ใช้: [EXW/FOB/CIF]\n\nสร้าง: Import Checklist + Document ที่ต้องเตรียม\n+ Customs Duty ประมาณการ + Lead Time\n+ Risk Assessment`,
+      tip:'ขอ HS Code ที่เหมาะสมและอัตราภาษีนำเข้าด้วย' },
+    { num:'SC-08', emoji:'📝', tag:'สัญญา', title:'เปรียบเทียบ Quotation จาก Vendor หลายราย', desc:'Matrix เปรียบเทียบที่ทำให้การตัดสินใจโปร่งใสและ Justify ได้',
+      prompt:`เปรียบเทียบ Quotation:\nVendor A: [ราคา เงื่อนไข Delivery]\nVendor B: [ราคา เงื่อนไข Delivery]\nVendor C: [ราคา เงื่อนไข Delivery]\n\nทำ Comparison Matrix พร้อม:\n- Total Cost of Ownership (ไม่ใช่แค่ราคา)\n- Risk Assessment แต่ละ Vendor\n- แนะนำพร้อมเหตุผลที่ Audit ผ่าน`,
+      tip:'ขอให้ AI คำนวณ TCO รวมค่าขนส่ง ภาษี และ After-sale' },
+    { num:'SC-09', emoji:'🔄', tag:'Stock', title:'ออกแบบ Inventory Policy และ Min-Max', desc:'กำหนด Reorder Point และ Safety Stock ที่เหมาะสมแต่ละรายการ',
+      prompt:`ออกแบบ Inventory Policy สำหรับ:\nรายการสินค้า: [รายการ]\nยอดใช้เฉลี่ยต่อเดือน: [จำนวน]\nLead Time: [X วัน]\nยอมรับ Stockout ได้: [%]\n\nคำนวณ: EOQ / Reorder Point / Safety Stock\n/ Min-Max Level + วิธีตรวจสอบรายเดือน`,
+      tip:'ขอให้ AI อธิบาย Logic การคำนวณเพื่อ Explain ให้ผู้บริหารเข้าใจ' },
+    { num:'SC-10', emoji:'🤝', tag:'SRM', title:'ประเมินผล Supplier Performance (SRM)', desc:'ระบบประเมิน Supplier ที่สร้างแรงจูงใจและพัฒนาความสัมพันธ์',
+      prompt:`สร้าง Supplier Performance Evaluation:\nรายการ KPI ที่ต้องวัด: [Delivery / Quality / Price / Service]\nระยะเวลาประเมิน: [รายไตรมาส / รายปี]\nจำนวน Supplier: [X ราย]\n\nสร้าง: Scorecard Template + Weighting\n+ Rating Description + Action Plan Template\n+ Annual Review Meeting Agenda`,
+      tip:'ขอ Supplier Tiering (A/B/C) พร้อมสิทธิประโยชน์แต่ละระดับ' },
+  ]
+},
+
+cost: {
+  color:'#d2a8ff', tagBg:'rgba(210,168,255,.1)', tagBorder:'rgba(210,168,255,.25)',
+  cards:[
+    { num:'CC-01', emoji:'💰', tag:'Budget', title:'จัดทำ Project Budget Breakdown', desc:'สร้างโครงสร้างงบประมาณโครงการที่ครอบคลุมและ Trackable',
+      prompt:`สร้าง Project Budget Breakdown สำหรับ:\nชื่อโครงการ: [ชื่อ]\nมูลค่าโครงการ: [งบรวม]\นWorkscope หลัก: [ระบุ]\nระยะเวลา: [X เดือน]\n\nแบ่งเป็น WBS Level: Labor / Material / Equipment\n/ Subcontract / Overhead / Contingency\nพร้อม Phasing รายเดือน`,
+      tip:'ขอให้ AI เพิ่ม Cost Risk Register ควบคู่กัน' },
+    { num:'CC-02', emoji:'📊', tag:'EVM', title:'วิเคราะห์ Earned Value Management (EVM)', desc:'คำนวณ CPI, SPI และประเมิน EAC ของโครงการ',
+      prompt:`วิเคราะห์ EVM ของโครงการ:\nBudget at Completion (BAC): [ตัวเลข]\nPlanned Value (PV): [ตัวเลข]\nEarned Value (EV): [ตัวเลข]\nActual Cost (AC): [ตัวเลข]\n\nคำนวณ: CPI / SPI / CV / SV / EAC / ETC / TCPI\nอธิบายความหมายและ Action ที่ควรทำ`,
+      tip:'ขอให้ AI สร้าง S-Curve Template พร้อมด้วย' },
+    { num:'CC-03', emoji:'⚠️', tag:'Variance', title:'วิเคราะห์ Cost Variance และหาสาเหตุ', desc:'อธิบาย Cost Overrun และเสนอแนวทางแก้ไขที่เป็นไปได้',
+      prompt:`วิเคราะห์ Cost Variation รายงานนี้:\nBudget: [ตัวเลข]\nActual: [ตัวเลข]\nVariance: [ตัวเลข / %]\nสาเหตุเบื้องต้นที่ทราบ: [อธิบาย]\n\nวิเคราะห์: Root Cause Analysis\n+ ผลกระทบต่อ Final Cost\n+ Recovery Plan + ข้อเสนอ Change Order (ถ้ามี)`,
+      tip:'ขอ Forecast to Complete (FTC) พร้อม Confidence Level' },
+    { num:'CC-04', emoji:'📋', tag:'Change', title:'ร่าง Change Order / Variation Order', desc:'สร้าง CO/VO ที่ Justify ได้และผ่านการอนุมัติเร็ว',
+      prompt:`ร่าง Change Order สำหรับ:\nงานที่เปลี่ยน/เพิ่ม: [อธิบาย]\nสาเหตุ: [เหตุผล]\nผลกระทบต้นทุน: [+ / - จำนวน]\nผลกระทบ Schedule: [+ / - X วัน]\n\nสร้าง CO Document: Background + Scope Change\n+ Cost Impact Analysis + Schedule Impact\n+ Supporting Document ที่ต้องแนบ`,
+      tip:'ขอให้ AI เตรียม Counter-argument ที่ Owner อาจปฏิเสธ' },
+    { num:'CC-05', emoji:'🔮', tag:'Forecast', title:'ทำ Cost Forecast ถึง Completion', desc:'ประเมิน Estimate at Completion ที่แม่นยำพร้อม Scenario',
+      prompt:`ทำ Cost Forecast สำหรับโครงการ:\nความคืบหน้า: [X %]\nต้นทุนที่ใช้ไปแล้ว: [จำนวน]\nงานที่เหลือ: [อธิบาย]\nความเสี่ยงที่ระบุ: [รายการ]\n\nทำ 3 Scenario: Optimistic / Base / Pessimistic\nพร้อม EAC แต่ละ Scenario + Risk Factor`,
+      tip:'ขอให้ AI แนะนำ Cost Reduction Measure เพื่อดึง Forecast กลับ' },
+    { num:'CC-06', emoji:'📝', tag:'Report', title:'จัดทำ Monthly Cost Report ให้ Client', desc:'สรุปสถานะต้นทุนรายเดือนที่ Client และผู้บริหารพอใจ',
+      prompt:`จัดทำ Monthly Cost Report:\nโครงการ: [ชื่อ]\nเดือน: [เดือน/ปี]\nข้อมูลต้นทุน: [วาง Data]\n\nสร้าง: Executive Summary + Budget vs Actual Table\n+ Variance Analysis + Cash Flow Status\n+ Forecast + Issue & Risk\n+ Corrective Action`,
+      tip:'ขอ Traffic Light Summary (🟢🟡🔴) สำหรับแต่ละ Cost Category' },
+    { num:'CC-07', emoji:'💡', tag:'Value Eng', title:'ทำ Value Engineering เพื่อลดต้นทุน', desc:'หาโอกาสลดต้นทุนโดยไม่กระทบ Scope และคุณภาพ',
+      prompt:`ทำ Value Engineering Workshop สำหรับ:\nรายการงานที่ Cost สูง: [ระบุ]\nต้นทุนปัจจุบัน: [จำนวน]\nTarget ลดต้นทุน: [X %]\nข้อจำกัด: [ห้ามกระทบ Spec ไหน]\n\nเสนอ VE Options อย่างน้อย 5 ทาง\nพร้อม Saving / Risk / ผลกระทบต่อ Quality`,
+      tip:'ขอให้ AI Rank ตาม Ease of Implementation × Saving Impact' },
+    { num:'CC-08', emoji:'🧮', tag:'Estimate', title:'ทำ Rough Order of Magnitude (ROM) Estimate', desc:'ประเมินต้นทุนเบื้องต้นสำหรับตัดสินใจ Bid/No-Bid',
+      prompt:`ทำ ROM Cost Estimate สำหรับ:\nประเภทงาน: [Civil/MEP/Building]\nขนาดโครงการ: [พื้นที่/ปริมาตร]\nที่ตั้ง: [จังหวัด/ภูมิภาค]\nระยะเวลา: [เดือน]\n\nประมาณ: Direct Cost / Indirect Cost / Contingency\nระบุ Accuracy Level และ Assumption หลัก`,
+      tip:'ขอ Benchmarking Cost ต่อหน่วยเพื่อ Sanity Check' },
+    { num:'CC-09', emoji:'🔄', tag:'Cashflow', title:'วางแผน Project Cash Flow', desc:'จัดทำ Cash Flow Projection รายเดือนตลอดโครงการ',
+      prompt:`วางแผน Project Cash Flow:\nมูลค่าโครงการ: [งบ]\nระยะเวลา: [X เดือน]\nเงื่อนไขการเบิกจ่าย: [Milestone / Monthly]\nPayment Terms Client: [X วัน]\nPayment Terms Vendor: [X วัน]\n\nทำ Monthly Cash Flow + Cumulative Cash Flow\nระบุช่วงที่ Cash Negative + วิธีแก้`,
+      tip:'ขอให้ AI แนะนำ Financing Option สำหรับช่วง Cash Gap' },
+    { num:'CC-10', emoji:'📌', tag:'Closeout', title:'จัดทำ Final Cost Report ปิดโครงการ', desc:'สรุปต้นทุนสุดท้ายและบทเรียนสำหรับโครงการถัดไป',
+      prompt:`จัดทำ Project Cost Closeout Report:\nต้นทุนรวมทั้งหมด: [จำนวน]\nBudget ตั้งต้น: [จำนวน]\nVariance: [จำนวน / %]\n\nสรุป: Budget vs Final Cost แต่ละ WBS\n+ สาเหตุ Overrun/Underrun\n+ Lesson Learned\n+ Benchmark สำหรับโครงการถัดไป`,
+      tip:'ขอให้ AI สร้าง Cost Database Template เพื่อใช้ Estimate โครงการหน้า' },
+  ]
+},
+
+eng: {
+  color:'#ffa657', tagBg:'rgba(255,166,87,.1)', tagBorder:'rgba(255,166,87,.25)',
+  cards:[
+    { num:'EN-01', emoji:'📐', tag:'Design', title:'เขียน Design Brief / Scope of Work', desc:'กำหนดขอบเขตงานออกแบบที่ชัดเจนก่อนเริ่มโครงการ',
+      prompt:`เขียน Engineering Design Brief สำหรับ:\nประเภทงาน: [Civil/Structural/MEP]\nที่ตั้งโครงการ: [ที่ตั้ง]\nขนาด: [พื้นที่/ขนาด]\nมาตรฐานที่ใช้: [TIS/ASTM/BS]\n\nระบุ: Scope / Deliverable / Design Criteria\n/ Code & Standard / Assumption / Exclusion`,
+      tip:'ขอให้ AI เพิ่ม Interface ระหว่าง Discipline ที่ต้อง Coordinate' },
+    { num:'EN-02', emoji:'📋', tag:'Spec', title:'ร่าง Technical Specification วัสดุ', desc:'เขียน Material Spec ที่ชัดเจนและป้องกัน Substitution ไม่พึงประสงค์',
+      prompt:`เขียน Technical Specification สำหรับ:\nวัสดุ: [ชื่อวัสดุ]\nการใช้งาน: [ใช้ที่ไหน]\nมาตรฐาน: [ASTM/TIS/EN]\nสภาพแวดล้อม: [Indoor/Outdoor/Corrosive]\n\nระบุ: Grade / Property / Testing Method\n/ Approval Process / Substitution Clause`,
+      tip:'ขอให้ AI เพิ่ม Submittal Review Checklist ด้วย' },
+    { num:'EN-03', emoji:'🔍', tag:'Inspection', title:'สร้าง Inspection and Test Plan (ITP)', desc:'ออกแบบแผนตรวจสอบคุณภาพงานก่อสร้างที่ครอบคลุม',
+      prompt:`สร้าง Inspection and Test Plan (ITP) สำหรับ:\nงาน: [ประเภทงาน เช่น ฐานราก/โครงสร้างเหล็ก]\nมาตรฐาน: [ที่ใช้บังคับ]\n\nสร้าง ITP Table: Activity / Inspection Type\n(H/W/R) / Frequency / Reference / Record\nพร้อม Hold Point ที่ต้องขออนุมัติก่อนดำเนินการ`,
+      tip:'ขอ Non-Conformance Report (NCR) Template คู่กัน' },
+    { num:'EN-04', emoji:'📊', tag:'Progress', title:'รายงานความคืบหน้างานก่อสร้าง', desc:'สร้าง Weekly/Monthly Progress Report ที่ Client ประทับใจ',
+      prompt:`จัดทำ Construction Progress Report:\nโครงการ: [ชื่อ]\nรอบรายงาน: [สัปดาห์/เดือน]\nความคืบหน้า Plan: [X %]\nความคืบหน้า Actual: [X %]\nกิจกรรมหลักที่ทำ: [รายการ]\n\nสรุป: S-Curve Status / Critical Issue\n/ Next Period Plan / Photos Caption`,
+      tip:'ขอให้ AI เขียน Executive Summary แบบ 1 ย่อหน้าสำหรับ Client' },
+    { num:'EN-05', emoji:'⚠️', tag:'NCR', title:'เขียน Non-Conformance Report (NCR)', desc:'บันทึก NCR อย่างมีระบบเพื่อแก้ไขและป้องกันการเกิดซ้ำ',
+      prompt:`เขียน Non-Conformance Report:\nงานที่ไม่เป็นไปตาม Spec: [อธิบาย]\nมาตรฐานที่ละเมิด: [Spec/Drawing Ref]\nตำแหน่งที่พบ: [Location]\nผู้ตรวจพบ: [ชื่อ]\n\nร่าง NCR: Description / Non-Conformance Detail\n/ Root Cause / Corrective Action / Disposition\n/ Preventive Action / Verification`,
+      tip:'ขอให้ AI เสนอ Preventive Action ที่ป้องกัน Recurrence' },
+    { num:'EN-06', emoji:'📝', tag:'Method', title:'เขียน Method Statement งานก่อสร้าง', desc:'สร้าง Method Statement ที่ครบถ้วนสำหรับขออนุมัติงาน',
+      prompt:`เขียน Method Statement สำหรับ:\nประเภทงาน: [เช่น Pile Driving / Concrete Casting]\nที่ตั้ง: [ระบุ]\nอุปกรณ์ที่ใช้: [รายการ]\nมาตรฐาน: [ที่ใช้]\n\nรวม: Sequence of Work / Resource\n/ Quality Control Point / Safety Measure\n/ Environmental Consideration`,
+      tip:'ขอให้ AI เพิ่ม Risk Assessment ควบคู่กับ Method Statement' },
+    { num:'EN-07', emoji:'🔧', tag:'Punch List', title:'จัดทำ Punch List ก่อน Handover', desc:'ระบบตรวจสอบงานก่อน Handover ที่ไม่ตกหล่น',
+      prompt:`สร้าง Pre-Handover Punch List สำหรับ:\nประเภทอาคาร/งาน: [ระบุ]\nระบบที่ต้องตรวจ: [Civil/Structural/MEP/Finishing]\n\nสร้าง Checklist แบ่งตาม Discipline:\n- Structural & Civil\n- MEP Systems\n- Finishing & Aesthetics\n- Documentation\nพร้อม Priority Level (Critical/Major/Minor)`,
+      tip:'ขอ Handover Certificate Template พร้อม Punch List' },
+    { num:'EN-08', emoji:'📌', tag:'RFI', title:'เขียน Request for Information (RFI)', desc:'ส่ง RFI ที่ชัดเจนและได้คำตอบที่ต้องการจาก Designer',
+      prompt:`เขียน RFI สำหรับ:\nประเด็นที่ไม่ชัดเจน: [อธิบาย]\nDrawing / Spec Reference: [เลขที่]\nผลกระทบถ้าไม่ได้คำตอบ: [Cost/Time]\nDeadline ต้องการคำตอบ: [วันที่]\n\nเขียน RFI: Background / Question / Options\n/ Recommendation / Impact Statement`,
+      tip:'ขอให้ AI แนะนำ Option ที่เป็น Preferred Solution เพื่อเร่งการตัดสินใจ' },
+    { num:'EN-09', emoji:'🏗️', tag:'Site', title:'เขียน Site Instruction / Technical Query', desc:'สื่อสารคำสั่งงานหน้าไซต์ที่ชัดเจนและบันทึกได้',
+      prompt:`เขียน Site Instruction สำหรับ:\nงาน: [ประเภทงาน]\nคำสั่ง: [สิ่งที่ต้องทำ]\nเหตุผล: [ทำไมถึงสั่ง]\nDeadline: [เวลา/วันที่]\n\nเขียนเป็น Formal SI: Reference / Description\n/ Reason / Instruction / Compliance Due Date\n/ Signature Block`,
+      tip:'ขอให้ AI เพิ่ม Cost Impact Notice ถ้า SI กระทบงบ' },
+    { num:'EN-10', emoji:'📚', tag:'As-Built', title:'เตรียม As-Built Documentation Package', desc:'Checklist เอกสาร As-Built ที่ครบถ้วนสำหรับส่งมอบโครงการ',
+      prompt:`สร้าง As-Built Documentation Checklist สำหรับ:\nประเภทโครงการ: [อาคาร/โรงงาน/Infrastructure]\nระบบที่มี: [Civil/Structural/Mechanical/Electrical/Piping]\n\nรายการเอกสาร: As-Built Drawings / O&M Manual\n/ Test Records / Warranty Documents\n/ Permits / Training Records\nพร้อม Format และ Submittal Schedule`,
+      tip:'ขอให้ AI สร้าง Digital Handover Package Structure ด้วย' },
+  ]
+},
+
+sub: {
+  color:'#56d364', tagBg:'rgba(86,211,100,.1)', tagBorder:'rgba(86,211,100,.25)',
+  cards:[
+    { num:'SB-01', emoji:'📋', tag:'สัญญา', title:'ร่าง Subcontract Agreement หลัก', desc:'สร้างสัญญาผู้รับเหมาช่วงที่คุ้มครองผลประโยชน์บริษัท',
+      prompt:`ร่าง Subcontract Agreement สำหรับ:\nงาน: [ประเภทงาน]\nมูลค่าสัญญา: [จำนวน]\nระยะเวลา: [Start-End Date]\nเงื่อนไขพิเศษ: [ระบุ]\n\nรวม Clause: Scope / Price / Payment / Schedule\n/ Quality / Safety / Insurance / Penalty\n/ Termination / Dispute Resolution\n\nหมายเหตุ: ตรวจสอบกับนักกฎหมายก่อนใช้จริง`,
+      tip:'ขอให้ AI เพิ่ม Back-to-Back Clause กับสัญญาหลัก (Main Contract)' },
+    { num:'SB-02', emoji:'🔍', tag:'Prequalify', title:'คัดเลือก Subcontractor ที่เหมาะสม', desc:'ระบบ Prequalification ที่วัดความสามารถและความน่าเชื่อถือได้จริง',
+      prompt:`สร้าง Subcontractor Prequalification Form สำหรับ:\nงาน: [ประเภทงาน]\nระดับความเสี่ยง: [High/Medium/Low]\nงบสัญญาโดยประมาณ: [ช่วง]\n\nรวม: Company Profile / Financial Check\n/ Technical Capability / Safety Record\n/ Reference Projects / License & Insurance\n+ Minimum Qualification Criteria`,
+      tip:'ขอ Red Flag Checklist ที่ทำให้ Reject ทันที' },
+    { num:'SB-03', emoji:'📊', tag:'ประเมิน', title:'ประเมินผล Subcontractor รายไตรมาส', desc:'ระบบ KPI วัดผล Sub ที่ยุติธรรมและสร้างแรงจูงใจ',
+      prompt:`สร้าง Subcontractor Performance KPI สำหรับ:\nงาน: [ประเภท]\nระยะประเมิน: [รายไตรมาส]\n\nKPI ที่วัด: Quality (%) / Schedule (%) / Safety\n/ Responsiveness / Documentation\n\nสร้าง: Scorecard + Rating 1-5\n+ Improvement Notice Template\n+ Award/Penalty Threshold`,
+      tip:'ขอ Performance Review Meeting Agenda ด้วย' },
+    { num:'SB-04', emoji:'💵', tag:'Payment', title:'บริหาร Subcontractor Payment Claim', desc:'ตรวจสอบและ Certify Payment Application อย่างมีระบบ',
+      prompt:`สร้าง Payment Claim Review Procedure:\nงาน: [ประเภท]\nเงื่อนไขการจ่าย: [Milestone/Monthly Progress]\n\nสร้าง: Payment Application Checklist\n+ Verification Steps + Deduction Matrix\n(Penalty / Defect / Safety Fine)\n+ Certification Template + Payment Record`,
+      tip:'ขอ Disputed Claim Resolution Process ด้วย' },
+    { num:'SB-05', emoji:'⚠️', tag:'ปัญหา', title:'จัดการ Subcontractor ที่ทำงานล่าช้า', desc:'ขั้นตอนและเอกสารสำหรับจัดการ Default Contractor อย่างถูกต้อง',
+      prompt:`วางแผนจัดการ Subcontractor ที่ล่าช้า:\nงาน: [ชื่องาน]\nความล่าช้า: [X วัน]\nเหตุผลที่ Sub อ้าง: [ระบุ]\nผลกระทบต่อ Main Contract: [ระบุ]\n\nสร้าง: Notice to Proceed Template\n+ Show Cause Letter + Recovery Plan Template\n+ Penalty Calculation + Termination Timeline`,
+      tip:'ขอให้ AI เตรียม Letter ตาม Escalation Level: Warning → Default → Terminate' },
+    { num:'SB-06', emoji:'🔄', tag:'Scope Change', title:'บริหาร Variation / Extra Work ของ Sub', desc:'ควบคุม Scope Creep และ Unauthorized Work ของผู้รับเหมาช่วง',
+      prompt:`สร้าง Variation Order Management Process สำหรับ Sub:\nประเภท Variation: [Owner Change / Site Condition / Error]\n\nสร้าง: VO Request Form + Evaluation Template\n+ Approval Matrix + Pricing Methodology\n+ Back-charge Process + VO Register Format\n+ Commercial Impact Tracker`,
+      tip:'ขอ "Unauthorized Work Clause" ที่ป้องกัน Sub ทำงานเพิ่มโดยไม่ขออนุมัติ' },
+    { num:'SB-07', emoji:'🛡️', tag:'Insurance', title:'ตรวจสอบ Insurance และ Bond ของ Sub', desc:'Checklist ตรวจสอบความครบถ้วนของ Insurance Coverage',
+      prompt:`สร้าง Insurance Compliance Checklist สำหรับ Sub:\nงาน: [ประเภท High Risk/Civil/MEP]\nมูลค่าสัญญา: [จำนวน]\n\nรายการที่ต้องตรวจ:\n- Workers Compensation\n- Public Liability\n- All Risk Insurance (CAR)\n- Performance Bond\nพร้อม Minimum Coverage Amount และ วิธี Verify`,
+      tip:'ขอ Template Letter แจ้ง Sub เมื่อ Insurance หมดอายุ' },
+    { num:'SB-08', emoji:'👷', tag:'Safety', title:'กำหนด Safety Requirement สำหรับ Sub', desc:'ข้อกำหนดความปลอดภัยที่ Sub ต้องปฏิบัติตามในไซต์',
+      prompt:`สร้าง Subcontractor Safety Requirement สำหรับ:\nประเภทงาน: [งานสูง/งานใต้ดิน/งานไฟฟ้า]\nขนาดทีม Sub: [X คน]\nระยะเวลางาน: [X เดือน]\n\nรวม: Mandatory Safety Training / PPE Requirement\n/ Permit to Work / Incident Reporting\n/ Safety Fine Schedule / Site Rules`,
+      tip:'ขอ Safety Induction Presentation สำหรับ Sub พนักงานใหม่ด้วย' },
+    { num:'SB-09', emoji:'📁', tag:'เอกสาร', title:'จัดทำ Subcontract Document Control', desc:'ระบบควบคุมเอกสารสัญญา Sub ที่ค้นหาง่ายและ Audit ผ่าน',
+      prompt:`ออกแบบ Subcontract Document Control System:\nจำนวน Sub: [X ราย]\nประเภทเอกสาร: [Contract / PO / Variation / Payment]\n\nสร้าง: Document Register Template + Filing Structure\n+ Revision Control + Transmittal Log\n+ Expiry Date Tracker (Insurance / Bond)\n+ Audit Trail Format`,
+      tip:'ขอ Monthly Document Status Report Template ด้วย' },
+    { num:'SB-10', emoji:'🏁', tag:'Closeout', title:'ปิดสัญญา Subcontract อย่างสมบูรณ์', desc:'Checklist ปิดสัญญา Sub ที่ครบถ้วนและป้องกันปัญหาภายหลัง',
+      prompt:`สร้าง Subcontract Closeout Checklist:\nประเภทงาน: [ระบุ]\n\nรายการที่ต้องเสร็จก่อนปิดสัญญา:\n- Punch List Complete\n- Final Measurement & Certification\n- As-Built Submission\n- Warranty Documentation\n- Release of Retention\n- No-claim Certificate\nพร้อม Closeout Timeline`,
+      tip:'ขอ Final Account Statement Template เพื่อสรุปยอดสุดท้าย' },
+  ]
+},
+
+legal: {
+  color:'#79c0ff', tagBg:'rgba(121,192,255,.1)', tagBorder:'rgba(121,192,255,.25)',
+  cards:[
+    { num:'LC-01', emoji:'📋', tag:'สัญญา', title:'ตรวจสอบ Contract Risk ก่อนเซ็น', desc:'สแกนหาความเสี่ยงในสัญญาที่อาจส่งผลเสียต่อบริษัท',
+      prompt:`ตรวจสอบความเสี่ยงในสัญญาต่อไปนี้:\n[วางข้อความสัญญา]\n\nวิเคราะห์:\n1. Clause ที่เสี่ยงต่อบริษัท\n2. Obligation ที่อาจทำไม่ได้\n3. Penalty / Liability ที่ไม่สมเหตุสมผล\n4. ข้อที่ควรเจรจาแก้ไข\n5. Missing Clause ที่ควรเพิ่ม\n\nหมายเหตุ: ตรวจสอบกับนักกฎหมายก่อนตัดสินใจ`,
+      tip:'ขอ Red Line Version พร้อม Suggested Alternative Wording' },
+    { num:'LC-02', emoji:'🔒', tag:'Compliance', title:'สร้าง Compliance Checklist', desc:'ตรวจสอบความสอดคล้องกฎหมายที่เกี่ยวข้องกับธุรกิจ',
+      prompt:`สร้าง Compliance Checklist สำหรับ:\nประเภทธุรกิจ: [ก่อสร้าง/การผลิต/บริการ]\nขนาดบริษัท: [จำนวนพนักงาน]\nกฎหมายที่เกี่ยวข้อง: [แรงงาน/สิ่งแวดล้อม/ภาษี]\n\nสร้าง Annual Compliance Calendar:\nรายการที่ต้องทำ + Due Date + ผู้รับผิดชอบ\n+ บทลงโทษถ้าไม่ปฏิบัติ`,
+      tip:'ขอให้ AI เพิ่ม Regulatory Change Tracker สำหรับติดตามกฎหมายใหม่' },
+    { num:'LC-03', emoji:'🕵️', tag:'Internal Audit', title:'วางแผน Internal Audit ประจำปี', desc:'ออกแบบ Audit Plan ที่ครอบคลุม Risk ทั้งองค์กร',
+      prompt:`วางแผน Annual Internal Audit:\nบริษัท: [ประเภทธุรกิจ]\nแผนกที่ต้องตรวจ: [รายการ]\nความเสี่ยงหลัก: [ระบุ]\nทรัพยากร Auditor: [X คน]\n\nสร้าง: Risk-based Audit Universe\n+ Annual Audit Schedule + Scope แต่ละงาน\n+ Sampling Method + Report Format`,
+      tip:'ขอ Audit Finding Classification (Critical/Major/Minor/Observation) ด้วย' },
+    { num:'LC-04', emoji:'📊', tag:'Risk', title:'ทำ Risk Assessment Matrix', desc:'ประเมินและจัดลำดับความเสี่ยงองค์กรอย่างเป็นระบบ',
+      prompt:`สร้าง Risk Assessment Matrix สำหรับ:\nประเภทองค์กร: [ระบุ]\nหน่วยงานที่ประเมิน: [แผนก]\nกรอบเวลา: [1 ปี]\n\nสร้าง: Risk Register + 5x5 Matrix\nแต่ละ Risk: Description / Likelihood / Impact\n/ Current Control / Residual Risk / Owner\n/ Mitigation Plan`,
+      tip:'ขอ Heat Map แบบ Visual สำหรับ Present ผู้บริหาร' },
+    { num:'LC-05', emoji:'📝', tag:'Policy', title:'ร่าง Company Policy / Procedure', desc:'สร้าง Policy ที่ถูกกฎหมาย เข้าใจง่าย และพนักงานปฏิบัติได้',
+      prompt:`ร่าง Company Policy สำหรับ: [หัวข้อ]\nบริษัท: [ประเภท]\nกฎหมายที่เกี่ยวข้อง: [ระบุ]\n\nโครงสร้าง:\n1. วัตถุประสงค์และขอบเขต\n2. นิยามศัพท์\n3. หลักการและข้อกำหนด\n4. ความรับผิดชอบ\n5. บทลงโทษ\n6. Review Cycle\n\nภาษาที่เข้าใจง่าย ไม่ใช่ Legal Jargon`,
+      tip:'ขอ Employee FAQ พร้อม Policy เพื่อลด Misinterpretation' },
+    { num:'LC-06', emoji:'⚠️', tag:'Dispute', title:'เตรียมเอกสารรับมือข้อพิพาท', desc:'รวบรวมและจัดระเบียบหลักฐานสำหรับข้อพิพาทสัญญา',
+      prompt:`ช่วยเตรียมเอกสารสำหรับข้อพิพาท:\nประเด็นพิพาท: [อธิบาย]\nฝ่ายตรงข้าม: [ระบุ]\nมูลค่าที่เกี่ยวข้อง: [จำนวน]\nหลักฐานที่มี: [รายการเอกสาร]\n\nสร้าง: Chronology of Events\n+ Claim Position Summary\n+ Evidence Index\n+ Weak Points ที่ต้องเสริม\n\nหมายเหตุ: ปรึกษาทนายก่อนดำเนินการ`,
+      tip:'ขอ Negotiation Strategy ก่อน Escalate เป็น Formal Dispute' },
+    { num:'LC-07', emoji:'🔐', tag:'PDPA', title:'ตรวจสอบความสอดคล้อง PDPA', desc:'ตรวจสอบและปรับปรุงการจัดการข้อมูลส่วนบุคคลให้ถูก PDPA',
+      prompt:`ทำ PDPA Compliance Review สำหรับ:\nประเภทข้อมูลส่วนบุคคลที่เก็บ: [รายการ]\nวัตถุประสงค์การใช้: [ระบุ]\nช่องทางเก็บข้อมูล: [Website/Form/HR System]\n\nตรวจสอบ: Legal Basis / Consent Form\n/ Privacy Notice / Data Retention Policy\n/ Data Subject Rights Process\n/ Breach Response Plan`,
+      tip:'ขอ Data Processing Agreement Template สำหรับ Vendor ด้วย' },
+    { num:'LC-08', emoji:'🏛️', tag:'กฎหมาย', title:'สรุปกฎหมายใหม่ที่กระทบธุรกิจ', desc:'แปลงกฎหมายซับซ้อนให้เป็น Action List ที่บริษัทต้องทำ',
+      prompt:`สรุปกฎหมาย/ระเบียบต่อไปนี้:\n[วางข้อความกฎหมาย]\n\nอธิบายในภาษาธุรกิจ:\n1. สาระสำคัญที่กระทบบริษัท\n2. วันมีผลบังคับ\n3. สิ่งที่บริษัทต้องทำและ Deadline\n4. บทลงโทษถ้าไม่ปฏิบัติ\n5. Priority Action List\n\nหมายเหตุ: ตรวจสอบกับผู้เชี่ยวชาญกฎหมายก่อนดำเนินการ`,
+      tip:'ขอ Impact Assessment แยกตามแผนกที่ได้รับผลกระทบ' },
+    { num:'LC-09', emoji:'📑', tag:'Due Diligence', title:'Checklist Due Diligence ก่อนลงทุน/ซื้อกิจการ', desc:'รายการตรวจสอบ Legal Due Diligence อย่างครบถ้วน',
+      prompt:`สร้าง Legal Due Diligence Checklist สำหรับ:\nประเภทธุรกรรม: [M&A/JV/Asset Purchase]\nอุตสาหกรรมเป้าหมาย: [ระบุ]\nมูลค่าประมาณ: [ช่วง]\n\nรายการตรวจสอบ:\n- Corporate Structure & Licenses\n- Contracts & Commitments\n- Litigation & Disputes\n- IP & Technology\n- Regulatory Compliance\n- Labor & Employment\n\nหมายเหตุ: ใช้เป็น Guide เบื้องต้น ต้องใช้ทนายความจริง`,
+      tip:'ขอ Red Flag Summary Template สำหรับ Report ผู้บริหาร' },
+    { num:'LC-10', emoji:'✍️', tag:'NDA', title:'ร่าง NDA และ Confidentiality Agreement', desc:'สร้าง Non-Disclosure Agreement ที่ปกป้องข้อมูลลับได้จริง',
+      prompt:`ร่าง NDA สำหรับ:\nประเภท: [Mutual/One-way]\nวัตถุประสงค์: [Business Discussion/Tech Sharing/M&A]\nระยะเวลาคุ้มครอง: [X ปี]\nข้อมูลที่ต้องคุ้มครอง: [ระบุ]\n\nรวม Clause: Definition of Confidential Info\n/ Obligations / Exceptions / Return/Destroy\n/ Remedies / Governing Law\n\nหมายเหตุ: ตรวจสอบกับนักกฎหมายก่อนใช้`,
+      tip:'ขอ Clause ครอบคลุม Digital Information และ AI-generated Content ด้วย' },
+  ]
+},
+
+logistics: {
+  color:'#ff7b72', tagBg:'rgba(255,123,114,.1)', tagBorder:'rgba(255,123,114,.25)',
+  cards:[
+    { num:'LG-01', emoji:'🚚', tag:'ขนส่ง', title:'วางแผนเส้นทางขนส่งให้ประหยัดที่สุด', desc:'เลือก Mode และ Route ขนส่งที่คุ้มค่าและตรง Deadline',
+      prompt:`วางแผนการขนส่ง:\nต้นทาง: [ที่ตั้ง]\nปลายทาง: [ที่ตั้ง]\nสินค้า: [ประเภท / น้ำหนัก / ขนาด]\nDeadline: [วันที่]\nงบขนส่ง: [ไม่เกิน]\n\nเปรียบเทียบ Options: Road / Rail / Sea / Air\nพร้อม Cost / Transit Time / Risk\nแนะนำพร้อม Backup Plan`,
+      tip:'ขอให้ AI คำนวณ Carbon Footprint แต่ละ Mode ด้วย' },
+    { num:'LG-02', emoji:'📦', tag:'คลัง', title:'ออกแบบ Layout คลังสินค้า', desc:'วางผังคลังที่ทำให้ Pick-Pack เร็วและพื้นที่คุ้มค่า',
+      prompt:`ช่วยออกแบบ Warehouse Layout สำหรับ:\nพื้นที่: [X ตร.ม.]\nประเภทสินค้า: [รายการ]\nVolume ต่อวัน: [รับ X ส่ง X รายการ]\nอุปกรณ์ที่มี: [Forklift/Conveyor/Rack]\n\nแนะนำ: Zone Layout / Flow Direction\n/ Slot Assignment Logic / Safety Zone\n/ Pick Path Optimization`,
+      tip:'ขอ ABC Analysis สำหรับจัดวาง Fast/Slow Moving แยกกัน' },
+    { num:'LG-03', emoji:'📊', tag:'KPI', title:'ตั้ง KPI วัดประสิทธิภาพ Logistics', desc:'กำหนด Metrics ที่วัดผลได้จริงและสะท้อน Service Level',
+      prompt:`สร้าง Logistics KPI Dashboard สำหรับ:\nขนาดธุรกิจ: [SME/Enterprise]\nช่องทาง: [B2B/B2C/Ecommerce]\nOperations ที่มี: [Warehouse/Transport/Last Mile]\n\nKPI ที่ควรวัด: On-time Delivery / Order Accuracy\n/ Warehouse Utilization / Cost per Order\n/ Damage Rate / Return Rate\nพร้อม Target และ Calculation Method`,
+      tip:'ขอ Monthly KPI Report Template พร้อม Traffic Light ด้วย' },
+    { num:'LG-04', emoji:'🔄', tag:'Returns', title:'ออกแบบ Reverse Logistics Process', desc:'จัดการสินค้าคืนอย่างมีระบบและลดต้นทุน',
+      prompt:`ออกแบบ Returns Management Process สำหรับ:\nประเภทสินค้า: [ระบุ]\nสาเหตุ Return หลัก: [Damage/Wrong Item/Defect]\nปริมาณ Return ต่อเดือน: [X ชิ้น]\n\nออกแบบ: Return Authorization Process\n/ Inspection & Disposition (Restock/Repair/Scrap)\n/ Credit/Refund Process\n/ Root Cause Analysis\n/ Cost Tracking`,
+      tip:'ขอ Customer Communication Template สำหรับแจ้ง Return Status' },
+    { num:'LG-05', emoji:'📋', tag:'Customs', title:'เตรียม Customs Clearance Documents', desc:'Checklist เอกสารพิธีศุลกากรที่ไม่ตกหล่น',
+      prompt:`สร้าง Customs Clearance Checklist สำหรับ:\nประเภท: [Import/Export]\nสินค้า: [รายการ]\nประเทศ: [ต้นทาง/ปลายทาง]\nIncoterms: [EXW/FOB/CIF/DDP]\n\nรายการเอกสาร: Commercial Invoice / Packing List\n/ B/L or AWB / Certificate of Origin\n/ Permit (ถ้ามี)\nพร้อม Timeline และ Common Mistakes`,
+      tip:'ขอ HS Code Classification Guide สำหรับสินค้าหลักด้วย' },
+    { num:'LG-06', emoji:'⚡', tag:'ด่วน', title:'จัดการ Urgent Shipment / Hot Item', desc:'Fast-track Process สำหรับสินค้าเร่งด่วนที่ต้องส่งทันที',
+      prompt:`วางแผนขนส่งเร่งด่วน:\nสินค้า: [รายการ]\nต้องถึงภายใน: [วัน/ชั่วโมง]\nปัญหาที่เจอ: [Stock Out / Line Stop / Customer Emergency]\nงบพิเศษที่ยอมรับได้: [จำนวน]\n\nวิเคราะห์: Options ทั้งหมด + ข้อดีข้อเสีย\n+ ขั้นตอน Execution + Escalation Path`,
+      tip:'ขอ Emergency Logistics Contact Directory Template ด้วย' },
+    { num:'LG-07', emoji:'🤝', tag:'3PL', title:'ประเมินและเลือก 3PL Partner', desc:'เกณฑ์คัดเลือก Logistics Service Provider ที่เหมาะกับธุรกิจ',
+      prompt:`สร้าง 3PL Evaluation Framework สำหรับ:\nขนาดธุรกิจ: [SME/Enterprise]\nVolume: [X Orders/Month]\nประเภทสินค้า: [ระบุ]\nพื้นที่ให้บริการ: [ในประเทศ/ต่างประเทศ]\n\nเกณฑ์ประเมิน: Capability / Network / Technology\n/ Price / Service Level / Financial Stability\nพร้อม Weighting และ RFP Template`,
+      tip:'ขอ SLA (Service Level Agreement) Template สำหรับทำสัญญากับ 3PL' },
+    { num:'LG-08', emoji:'📍', tag:'Tracking', title:'ออกแบบระบบ Shipment Tracking', desc:'วางระบบ Visibility ที่ทำให้ติดตามสินค้าได้ทุก Milestone',
+      prompt:`ออกแบบ Shipment Tracking System สำหรับ:\nช่องทาง: [Road/Sea/Air]\nจำนวน Shipment/เดือน: [X]\nผู้ใช้งาน: [Operations/Sales/Customer]\n\nออกแบบ: Tracking Milestone\n+ Notification Trigger (Email/Line/App)\n+ Exception Alert Logic\n+ Dashboard Requirement\n+ Report Format`,
+      tip:'ขอ Customer-facing Tracking Page UX Flow ด้วย' },
+    { num:'LG-09', emoji:'⚖️', tag:'Claim', title:'จัดการ Cargo Claim สินค้าเสียหาย', desc:'ขั้นตอนเรียกร้องค่าเสียหายสินค้าที่ถูกต้องและได้ผล',
+      prompt:`สร้าง Cargo Claim Process สำหรับ:\nประเภทความเสียหาย: [Physical Damage/Shortage/Delay]\nสินค้า: [รายการ / มูลค่า]\nผู้ขนส่ง: [Carrier ชื่อ]\nประกันภัย: [ชื่อบริษัทประกัน]\n\nสร้าง: Claim Procedure Step-by-step\n+ Document ที่ต้องรวบรวม\n+ Claim Letter Template\n+ Timeline และ Deadline`,
+      tip:'ขอ Photo Documentation Guide สำหรับถ่ายภาพสินค้าเสียหาย' },
+    { num:'LG-10', emoji:'🌱', tag:'Green', title:'วางแผน Green Logistics / ลด Carbon', desc:'ลดผลกระทบสิ่งแวดล้อมจากการขนส่งพร้อมประหยัดต้นทุน',
+      prompt:`วางแผน Green Logistics สำหรับ:\nปัจจุบัน: [Mode ขนส่งที่ใช้]\nVolume ต่อปี: [X ตัน / X Trips]\nTarget ลด Carbon: [X %]\n\nแนะนำ: Route Optimization / Consolidation\n/ Alternative Fuel / Packaging Reduction\n/ Modal Shift\nพร้อม Cost Impact และ Carbon Saving Estimate`,
+      tip:'ขอ Carbon Calculator Template สำหรับวัดผล ESG Reporting' },
+  ]
+},
+
+docctrl: {
+  color:'#f0c93a', tagBg:'rgba(240,201,58,.1)', tagBorder:'rgba(240,201,58,.25)',
+  cards:[
+    { num:'DC-01', emoji:'📁', tag:'ระบบ', title:'ออกแบบ Document Numbering System', desc:'สร้างระบบ Numbering ที่ค้นหาง่ายและขยายได้ตามโครงการ',
+      prompt:`ออกแบบ Document Numbering System สำหรับ:\nประเภทองค์กร: [โครงการก่อสร้าง/โรงงาน/Office]\nประเภทเอกสาร: [Drawing/Spec/Report/Letter]\nจำนวนโครงการ: [X โครงการพร้อมกัน]\n\nออกแบบ: Code Structure พร้อมอธิบาย\n+ ตัวอย่างแต่ละประเภท\n+ Master Register Template`,
+      tip:'ขอให้ AI ออกแบบให้ Compatible กับ ISO 9001 ด้วย' },
+    { num:'DC-02', emoji:'📋', tag:'Register', title:'สร้าง Document Register / Transmittal Log', desc:'ระบบติดตามเอกสารที่รู้ทันทีว่าล่าสุดอยู่ที่ไหน',
+      prompt:`สร้าง Master Document Register สำหรับ:\nโครงการ: [ชื่อ]\nประเภทเอกสาร: [Drawing/Calculation/Spec/Procedure]\nผู้ใช้งาน: [Owner/Contractor/Sub]\n\nรวม Column: Doc No / Title / Rev / Status\n/ Issue Date / Issued To / Received Ack\n/ Comments / Superseded By\nพร้อม Transmittal Template`,
+      tip:'ขอ Auto-filter และ Color-coding Rule สำหรับ Excel' },
+    { num:'DC-03', emoji:'🔄', tag:'Revision', title:'จัดการ Document Revision Control', desc:'ระบบควบคุม Revision ที่ไม่มีคนใช้เอกสาร Outdated',
+      prompt:`สร้าง Revision Control Procedure สำหรับ:\nประเภทเอกสาร: [Drawing/Procedure/Specification]\n\nออกแบบ:\n- Revision Numbering (Rev A, B, C หรือ 0,1,2)\n- Change History Block Template\n- Review/Approval Matrix\n- Distribution Update Process\n- Obsolete Document Management\n- Superseded Notice Template`,
+      tip:'ขอ "Revision Cloud" ใน Drawing Standard สำหรับ Revision Marking' },
+    { num:'DC-04', emoji:'📤', tag:'Submission', title:'บริหาร Submittal / Shop Drawing Review', desc:'ติดตาม Submittal Status ไม่ให้เกิด Delay เพราะเอกสารค้าง',
+      prompt:`สร้าง Submittal Management System สำหรับ:\nโครงการ: [ชื่อ]\nจำนวน Submittal ที่คาดว่าจะมี: [X รายการ]\nระยะเวลา Review: [X วัน]\n\nสร้าง: Submittal Register + Workflow\n+ Review Status Code (A/B/C/D)\n+ Late Submittal Alert Logic\n+ Monthly Submittal Status Report`,
+      tip:'ขอ Submittal Cover Sheet Template ด้วย' },
+    { num:'DC-05', emoji:'📬', tag:'Correspondence', title:'จัดการ Correspondence ระหว่างโครงการ', desc:'ระบบ Log จดหมาย-อีเมลโครงการที่ค้นหาได้ทุกเมื่อ',
+      prompt:`สร้าง Project Correspondence System สำหรับ:\nคู่สัญญา: [Owner/Contractor/Sub/Consultant]\nปริมาณ: [X จดหมาย/เดือน]\n\nสร้าง: Letter Numbering Format\n+ Incoming/Outgoing Log Template\n+ Response Deadline Tracker\n+ Acknowledgement Process\n+ Monthly Summary Format`,
+      tip:'ขอ Official Letter Template ตาม International Standard' },
+    { num:'DC-06', emoji:'🔐', tag:'Access', title:'กำหนด Document Access Control', desc:'ออกแบบ Permission Matrix ที่คนถูกคนเห็นเอกสารถูกชุด',
+      prompt:`ออกแบบ Document Access Control สำหรับ:\nจำนวนผู้ใช้: [X คน]\nกลุ่มผู้ใช้: [Owner/Engineer/Contractor/Admin]\nระบบที่ใช้: [SharePoint/EDMS/Google Drive]\n\nสร้าง: Permission Matrix (View/Edit/Approve/Distribute)\n+ Confidentiality Level (Public/Internal/Confidential/Restricted)\n+ Access Request Process\n+ Audit Trail Requirement`,
+      tip:'ขอ Clean Desk Policy สำหรับเอกสาร Confidential ด้วย' },
+    { num:'DC-07', emoji:'📊', tag:'รายงาน', title:'จัดทำ Document Status Report รายสัปดาห์', desc:'สรุปสถานะเอกสารที่ทีมและ Client ต้องการทราบ',
+      prompt:`สร้าง Weekly Document Status Report สำหรับ:\nโครงการ: [ชื่อ]\nประเภทเอกสารที่ติดตาม: [Drawing/Submittal/Correspondence]\n\nรายงานควรมี:\n- เอกสาร Overdue (ค้างนานเกินกำหนด)\n- เอกสาร Pending Approval\n- เอกสาร Issued สัปดาห์นี้\n- สถิติสะสม\n- Action Required`,
+      tip:'ขอ Dashboard แบบ Visual ที่ใช้ใน Progress Meeting' },
+    { num:'DC-08', emoji:'🏗️', tag:'Construction', title:'จัดการ Drawing Control หน้าไซต์', desc:'ให้แน่ใจว่าช่างหน้างานใช้ Drawing ล่าสุดเสมอ',
+      prompt:`สร้าง Site Drawing Control Procedure สำหรับ:\nโครงการก่อสร้าง: [ชื่อ]\nจำนวน Drawing: [X แผ่น]\nจำนวน Subcontractor: [X ราย]\n\nสร้าง:\n- Drawing Issue to Site Process\n- Controlled Copy vs Uncontrolled Copy\n- Superseded Drawing Retrieval\n- As-Built Markup Procedure\n- Site Drawing Register`,
+      tip:'ขอ QR Code Tracking System สำหรับ Drawing ด้วย' },
+    { num:'DC-09', emoji:'💻', tag:'Digital', title:'วางแผน EDMS (Electronic Document Management)', desc:'เลือกและ Implement ระบบ Document Management ที่เหมาะกับองค์กร',
+      prompt:`วางแผน EDMS Implementation สำหรับ:\nขนาดองค์กร: [จำนวนคน]\nปริมาณเอกสาร: [X รายการ/ปี]\nประเภทเอกสาร: [ระบุ]\nงบประมาณ: [ช่วง]\n\nแนะนำ:\n- System Options พร้อม Pros/Cons\n- Implementation Roadmap 6 เดือน\n- Migration Plan\n- Training Plan\n- Success KPI`,
+      tip:'ขอ RFP Template สำหรับขอ Proposal จาก EDMS Vendors' },
+    { num:'DC-10', emoji:'🗄️', tag:'Archive', title:'ออกแบบ Document Archiving Policy', desc:'จัดเก็บเอกสารระยะยาวที่ค้นหาได้และสอดคล้องกฎหมาย',
+      prompt:`สร้าง Document Retention & Archive Policy สำหรับ:\nประเภทธุรกิจ: [ก่อสร้าง/โรงงาน/บริการ]\nกฎหมายที่เกี่ยวข้อง: [ระบุ เช่น 5 ปีตามกฎหมายบัญชี]\n\nกำหนด:\n- Retention Period แต่ละประเภทเอกสาร\n- Archive Medium (Physical/Digital)\n- Index System\n- Destruction Procedure\n- Legal Hold Process`,
+      tip:'ขอ Document Lifecycle Flowchart ตั้งแต่สร้างถึงทำลาย' },
+  ]
+},
+
+hes: {
+  color:'#3fb950', tagBg:'rgba(63,185,80,.1)', tagBorder:'rgba(63,185,80,.25)',
+  cards:[
+    { num:'HS-01', emoji:'⚠️', tag:'JSA', title:'เขียน Job Safety Analysis (JSA)', desc:'วิเคราะห์อันตรายและกำหนด Control ก่อนเริ่มงานเสี่ยง',
+      prompt:`เขียน Job Safety Analysis สำหรับ:\nงาน: [ประเภทงาน]\nที่ตั้ง: [ระบุ]\nอุปกรณ์ที่ใช้: [รายการ]\nจำนวนแรงงาน: [X คน]\n\nสร้าง JSA Table:\nStep / Hazard / Risk Level / Control Measure\n/ Responsible / PPE Required\nแบ่งตาม: Elimination / Substitution\n/ Engineering / Admin / PPE`,
+      tip:'ขอให้ AI เพิ่ม Emergency Response Plan สำหรับแต่ละ High Risk Step' },
+    { num:'HS-02', emoji:'🔥', tag:'Permit', title:'สร้าง Permit to Work System', desc:'ระบบ PTW ที่ครอบคลุมงานอันตรายสูงทุกประเภท',
+      prompt:`สร้าง Permit to Work System สำหรับ:\nประเภทงานอันตราย: [Hot Work/Confined Space/Working at Height/LOTO]\nไซต์งาน: [ประเภท]\n\nออกแบบ: Permit Form + Approval Matrix\n+ Pre-work Checklist + Concurrent Permit Rule\n+ Extension Procedure + Cancellation\n+ Revalidation Process`,
+      tip:'ขอ Permit Holder และ Issuer Competency Requirement ด้วย' },
+    { num:'HS-03', emoji:'🔍', tag:'Inspection', title:'ออกแบบ Safety Inspection Checklist', desc:'Checklist ตรวจสอบความปลอดภัยที่ครอบคลุมและใช้ได้จริง',
+      prompt:`สร้าง Safety Inspection Checklist สำหรับ:\nประเภทไซต์: [ก่อสร้าง/โรงงาน/สำนักงาน]\nความถี่: [รายวัน/รายสัปดาห์/รายเดือน]\n\nแยก Section:\n- General Site Condition\n- Electrical Safety\n- Fire Prevention\n- PPE Compliance\n- Machinery & Equipment\n- Chemical Storage\n- Emergency Readiness`,
+      tip:'ขอ Scoring System พร้อม Minimum Pass Score ด้วย' },
+    { num:'HS-04', emoji:'🚨', tag:'Incident', title:'จัดทำ Incident Investigation Report', desc:'สืบสวนอุบัติเหตุอย่างเป็นระบบเพื่อหา Root Cause จริง',
+      prompt:`เขียน Incident Investigation Report สำหรับ:\nประเภทเหตุการณ์: [Near Miss/First Aid/LTI/Fatality]\nเหตุการณ์: [อธิบายสั้นๆ]\nวัน/เวลา/ที่เกิด: [ระบุ]\n\nสร้างรายงานรวม:\n- Immediate Cause (Act / Condition)\n- Root Cause (5-Why / Fishbone)\n- Contributing Factors\n- Corrective & Preventive Action\n- Lessons Learned`,
+      tip:'ขอ Witness Interview Template ด้วย' },
+    { num:'HS-05', emoji:'📋', tag:'Induction', title:'สร้าง Safety Induction สำหรับพนักงานใหม่', desc:'ออกแบบ Induction Program ที่สร้าง Safety Culture ตั้งแต่วันแรก',
+      prompt:`สร้าง Safety Induction Program สำหรับ:\nประเภทงาน: [Office/Construction/Industrial]\nระยะเวลา Induction: [X ชั่วโมง/วัน]\nกลุ่มเป้าหมาย: [พนักงานใหม่/Contractor/Visitor]\n\nออกแบบ: เนื้อหา Induction + Sequence\n+ Practical Demo + Q&A\n+ Competency Test\n+ Sign-off Record`,
+      tip:'ขอ Presentation Slides Outline พร้อม Interactive Activity ด้วย' },
+    { num:'HS-06', emoji:'📊', tag:'Statistics', title:'วิเคราะห์สถิติความปลอดภัย', desc:'แปลงข้อมูลอุบัติเหตุเป็น Insight เพื่อป้องกันได้ตรงจุด',
+      prompt:`วิเคราะห์ Safety Statistics:\n[วาง Data: อุบัติเหตุ / Near Miss / Inspection Score]\nระยะเวลา: [ไตรมาส / ปี]\nชั่วโมงทำงานรวม: [X Man-hours]\n\nคำนวณและวิเคราะห์:\n- TRIR / LTIR / Severity Rate\n- Trend Analysis\n- Top Hazard Categories\n- แผนกที่มีปัญหาสูงสุด\n- Action Priority List`,
+      tip:'ขอ Leading vs Lagging Indicator Dashboard Template ด้วย' },
+    { num:'HS-07', emoji:'🌿', tag:'Environment', title:'ทำ Environmental Impact Assessment เบื้องต้น', desc:'ประเมินผลกระทบสิ่งแวดล้อมก่อนเริ่มกิจกรรม',
+      prompt:`ทำ Environmental Aspect & Impact Register สำหรับ:\nกิจกรรม/โครงการ: [ระบุ]\nที่ตั้ง: [ระบุ]\nขนาด: [ระบุ]\n\nระบุ: Environmental Aspect\n+ Potential Impact + Legal Requirement\n+ Significance (High/Med/Low)\n+ Control Measure + Monitoring Method\n+ KPI สิ่งแวดล้อมที่ต้องติดตาม`,
+      tip:'ขอ Environmental Monitoring Plan รายเดือนด้วย' },
+    { num:'HS-08', emoji:'🧯', tag:'Emergency', title:'จัดทำ Emergency Response Plan', desc:'แผนรับมือเหตุฉุกเฉินที่ทีมทำตามได้ในสถานการณ์จริง',
+      prompt:`สร้าง Emergency Response Plan สำหรับ:\nประเภทไซต์: [ระบุ]\nเหตุฉุกเฉินที่เป็นไปได้: [Fire/Chemical Spill/Medical/Earthquake]\nจำนวนคนในไซต์: [X คน]\n\nสร้าง: Emergency Organization Chart\n+ Response Procedure แต่ละ Scenario\n+ Assembly Point & Evacuation Route\n+ Emergency Contact List\n+ Drill Schedule`,
+      tip:'ขอ Emergency Drill Evaluation Form สำหรับวัดผลซ้อมด้วย' },
+    { num:'HS-09', emoji:'🏥', tag:'Health', title:'สร้าง Occupational Health Program', desc:'ออกแบบโปรแกรมดูแลสุขภาพพนักงานที่ครอบคลุมตาม Job Risk',
+      prompt:`ออกแบบ Occupational Health Program สำหรับ:\nประเภทธุรกิจ: [ก่อสร้าง/เหมือง/โรงงาน/Office]\nความเสี่ยงสุขภาพหลัก: [เสียง/ฝุ่น/สารเคมี/Ergonomics]\nจำนวนพนักงาน: [X คน]\n\nรวม: Medical Surveillance Program\n+ Exposure Monitoring\n+ Fit for Work Process\n+ Health Education Topics\n+ Annual Health Check Plan`,
+      tip:'ขอ Return-to-Work Program สำหรับพนักงานที่เจ็บป่วยด้วย' },
+    { num:'HS-10', emoji:'📈', tag:'Culture', title:'วางแผนพัฒนา Safety Culture', desc:'กลยุทธ์สร้างวัฒนธรรมความปลอดภัยที่ยั่งยืน',
+      prompt:`วางแผนพัฒนา Safety Culture สำหรับ:\nระดับปัจจุบัน: [Reactive/Dependent/Independent/Interdependent]\nขนาดองค์กร: [X คน]\nอุตสาหกรรม: [ระบุ]\n\nออกแบบ 12-month Roadmap:\n- Leadership Commitment Actions\n- Employee Engagement Program\n- Safety Observation Program\n- Recognition & Reward System\n- Safety Conversation Training\n- Measurement KPI`,
+      tip:'ขอ Safety Culture Survey Template สำหรับวัด Baseline ก่อนเริ่ม' },
+  ]
+}
+
+,
+
+it: {
+  color:'#58a6ff', tagBg:'rgba(88,166,255,.1)', tagBorder:'rgba(88,166,255,.25)',
+  cards:[
+    { num:'IT-01', emoji:'🖥️', tag:'Infrastructure', title:'วิเคราะห์และออกแบบ IT Infrastructure', desc:'วางแผน Infrastructure ที่รองรับการเติบโตและมีความเสถียร',
+      prompt:`ช่วยวิเคราะห์และออกแบบ IT Infrastructure สำหรับ:\nขนาดองค์กร: [จำนวน User]\nประเภทธุรกิจ: [ระบุ]\nระบบที่ใช้ปัจจุบัน: [On-premise/Cloud/Hybrid]\nงบประมาณ: [ช่วง]\n\nแนะนำ Architecture:\n- Network Design (LAN/WAN/WiFi)\n- Server & Storage\n- Backup & DR Strategy\n- Security Layer\nพร้อม Roadmap 1-3 ปี`,
+      tip:'ขอให้ AI เปรียบเทียบ TCO ระหว่าง On-premise vs Cloud ด้วย' },
+    { num:'IT-02', emoji:'🔒', tag:'Security', title:'ทำ IT Security Risk Assessment', desc:'ประเมินช่องโหว่ด้านความปลอดภัยและจัดลำดับความเร่งด่วนในการแก้ไข',
+      prompt:`ทำ IT Security Risk Assessment สำหรับ:\nระบบที่ต้องประเมิน: [Network/Server/Application/Endpoint]\nขนาดองค์กร: [จำนวน User]\nอุตสาหกรรม: [ระบุ]\nมาตรฐานอ้างอิง: [ISO 27001/NIST/CIS]\n\nสร้าง Risk Register:\n- Threat / Vulnerability / Impact / Likelihood\n- Risk Score / Priority\n- Recommended Control\n- Implementation Timeline`,
+      tip:'ขอ Executive Summary 1 หน้าสำหรับ Present ผู้บริหารที่ไม่ใช่สาย IT' },
+    { num:'IT-03', emoji:'🎫', tag:'Helpdesk', title:'ออกแบบ IT Helpdesk SLA และ Ticket Process', desc:'กำหนด Service Level ที่ชัดเจนและผู้ใช้งานพึงพอใจ',
+      prompt:`ออกแบบ IT Helpdesk System สำหรับ:\nจำนวน User: [X คน]\nทีม IT Support: [X คน]\nช่องทาง Request: [Email/Phone/Portal/Walk-in]\n\nกำหนด:\n- Ticket Priority Level (P1-P4) + Definition\n- SLA Response & Resolution Time แต่ละ Level\n- Escalation Path\n- CSAT Survey Template\n- Monthly Report KPI`,
+      tip:'ขอ First Call Resolution (FCR) Target และวิธีวัดด้วย' },
+    { num:'IT-04', emoji:'☁️', tag:'Cloud', title:'วางแผน Cloud Migration Strategy', desc:'ย้ายระบบขึ้น Cloud อย่างปลอดภัยและไม่กระทบ Business',
+      prompt:`วางแผน Cloud Migration สำหรับ:\nระบบที่จะย้าย: [รายการ Application/Server]\nCloud Target: [AWS/Azure/GCP/Hybrid]\nข้อจำกัด: [Downtime/Budget/Compliance]\nTimeline: [X เดือน]\n\nสร้าง Migration Plan:\n- Application Assessment (6R Framework)\n- Migration Wave Grouping\n- Risk & Rollback Plan\n- Cost Estimate Before/After\n- Testing & Cutover Checklist`,
+      tip:'ขอ Cloud Cost Optimization Tips หลัง Migration ด้วย' },
+    { num:'IT-05', emoji:'🔄', tag:'Backup & DR', title:'ออกแบบ Backup และ Disaster Recovery Plan', desc:'วางระบบ Backup ที่ Recovery ได้จริงเมื่อเกิดเหตุฉุกเฉิน',
+      prompt:`ออกแบบ Backup & DR Strategy สำหรับ:\nระบบสำคัญ: [รายการ Server/Application]\nRTO Target: [X ชั่วโมง]\nRPO Target: [X ชั่วโมง]\nงบประมาณ DR: [ช่วง]\n\nออกแบบ:\n- Backup Policy (3-2-1 Rule)\n- DR Site Option (Hot/Warm/Cold)\n- Failover Procedure Step-by-step\n- DR Drill Schedule\n- Recovery Testing Checklist`,
+      tip:'ขอ DR Drill Report Template และ After-action Review Format ด้วย' },
+    { num:'IT-06', emoji:'📋', tag:'Change Mgmt', title:'จัดทำ IT Change Management Process', desc:'ควบคุมการเปลี่ยนแปลงระบบโดยไม่กระทบ Production',
+      prompt:`สร้าง IT Change Management Procedure สำหรับ:\nจำนวนระบบ: [X ระบบ]\nทีม IT: [X คน]\nมาตรฐาน: [ITIL/ISO 20000]\n\nออกแบบ:\n- Change Category (Standard/Normal/Emergency)\n- Change Request Form + Fields\n- CAB (Change Advisory Board) Process\n- Impact & Risk Assessment Template\n- Rollback Plan Requirement\n- Post-implementation Review`,
+      tip:'ขอ Change Freeze Calendar สำหรับช่วง Business Critical Period' },
+    { num:'IT-07', emoji:'🛡️', tag:'Policy', title:'เขียน IT Policy และ Acceptable Use Policy', desc:'สร้าง IT Policy ที่ครอบคลุม ปฏิบัติได้จริง และสอดคล้องกฎหมาย',
+      prompt:`เขียน IT Acceptable Use Policy สำหรับ:\nขนาดบริษัท: [จำนวนพนักงาน]\nอุปกรณ์ที่มี: [Laptop/Mobile/BYOD]\nระบบที่ใช้: [Cloud/On-premise]\nกฎหมายที่เกี่ยวข้อง: [PDPA/ISO27001]\n\nครอบคลุม:\n- Internet & Email Usage\n- Software Installation\n- Data Classification & Handling\n- Password Policy\n- Remote Work Security\n- Violation & Consequence`,
+      tip:'ขอ Employee Acknowledgement Form ที่ต้องเซ็นยืนยันด้วย' },
+    { num:'IT-08', emoji:'📊', tag:'รายงาน', title:'จัดทำ Monthly IT Report ให้ผู้บริหาร', desc:'สรุปสถานะ IT Infrastructure และ Service ที่ผู้บริหารเข้าใจง่าย',
+      prompt:`จัดทำ Monthly IT Report สำหรับผู้บริหาร:\nระบบที่ดูแล: [รายการ]\nข้อมูลที่มี: [Uptime/Ticket/Incident/Cost]\n\nรายงานควรมี:\n- System Availability (Uptime %)\n- Helpdesk Summary (Volume/SLA Achievement)\n- Security Incidents\n- Major Projects Status\n- IT Spend vs Budget\n- Next Month Plan\nใช้ Traffic Light 🟢🟡🔴 และกราฟง่ายๆ`,
+      tip:'ขอ One-page Dashboard Version สำหรับ Exec Briefing' },
+    { num:'IT-09', emoji:'🔍', tag:'Audit', title:'เตรียม IT Audit และ Compliance Review', desc:'เตรียมหลักฐานและ Evidence สำหรับ IT Audit ให้ผ่านได้อย่างราบรื่น',
+      prompt:`เตรียม IT Compliance Audit สำหรับ:\nมาตรฐาน: [ISO 27001/SOC2/PDPA/PCI-DSS]\nขอบเขต Audit: [Network/Application/Process]\nรอบ: [Internal/External]\n\nสร้าง:\n- Evidence Collection Checklist\n- Common Audit Questions & Answers\n- Gap Analysis Template\n- Remediation Plan Format\n- Audit Trail Log Format\n- Document Preparation Timeline`,
+      tip:'ขอ Mock Audit Questions ที่ Auditor มักถามเพื่อฝึกซ้อมก่อนวันจริง' },
+    { num:'IT-10', emoji:'🚀', tag:'Project', title:'เขียน IT Project Proposal และ Business Case', desc:'สร้าง Proposal ที่ผู้บริหารอนุมัติงบประมาณและทรัพยากรได้ง่าย',
+      prompt:`เขียน IT Project Proposal สำหรับ:\nชื่อโครงการ: [ชื่อ]\nปัญหาที่แก้: [อธิบาย Pain Point]\nSolution ที่เสนอ: [ระบุ]\nงบประมาณ: [ประมาณการ]\nระยะเวลา: [X เดือน]\n\nสร้าง Business Case:\n- Problem Statement\n- Proposed Solution + Alternatives\n- Cost-Benefit Analysis / ROI\n- Risk Assessment\n- Implementation Timeline\n- Success KPI\n- Approval Request`,
+      tip:'ขอ "Elevator Pitch" 3 ประโยคสำหรับอธิบายโครงการให้ CEO ฟังด้วย' },
+  ]
+}
+
+};
+
+/* ── RENDER ── */
+function renderDept(id) {
+  const d = depts[id];
+  if (!d) return;
+  const grid = document.getElementById('grid-'+id);
+  if (!grid || grid.hasChildNodes()) return;
+  d.cards.forEach((c, i) => {
+    const delay = (i*0.04+0.03).toFixed(2);
+    grid.innerHTML += `
+    <div class="card" onclick="toggle(this)" style="animation-delay:${delay}s;--dc:${d.color}">
+      <div class="card-strip" style="background:${d.color}"></div>
+      <div class="card-front">
+        <div class="card-meta">
+          <span class="prompt-num">${c.num}</span>
+          <span class="use-tag" style="--tag-bg:${d.tagBg};--tag-c:${d.color};--tag-border:${d.tagBorder}">${c.tag}</span>
+        </div>
+        <div class="card-title-row">
+          <span class="card-emoji">${c.emoji}</span>
+          <div class="card-title">${c.title}</div>
+        </div>
+        <div class="card-desc">${c.desc}</div>
+        <div class="expand-row"><span class="earr">▶</span> ดู Prompt & วิธีใช้</div>
+      </div>
+      <div class="card-detail">
+        <div class="detail-body">
+          <div class="prompt-label">✦ Prompt Template</div>
+          <div class="prompt-box" style="border-left-color:${d.color}">
+            <button class="copy-btn" onclick="event.stopPropagation();copyP(this)" style="color:${d.color}">Copy</button>
+            <span class="ptext">${c.prompt.replace(/\n/g,'<br>')}</span>
+          </div>
+          <div class="tip-lbl">💡 PRO TIP</div>
+          <div class="tip-txt">${c.tip}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+}
+
+function showDept(id, btn) {
+  document.querySelectorAll('.dept-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.dept-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('dept-'+id).classList.add('active');
+  renderDept(id);
+}
+
+function toggle(card) { card.classList.toggle('opened'); }
+
+function copyP(btn) {
+  const raw = btn.nextElementSibling.innerText.trim();
+  navigator.clipboard.writeText(raw).then(()=>{
+    btn.textContent='Copied!'; btn.classList.add('ok');
+    setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('ok'); },2000);
+  });
+}
+
+/* init first dept */
+renderDept('hr');
+</script>
+</body>
+</html>

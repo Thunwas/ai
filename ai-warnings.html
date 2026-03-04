@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-Frame-Options" content="ALLOWALL">
+<title>AI ข้อควรระวัง สำหรับมือใหม่</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fdf6ec;
+    --surface: #fff9f2;
+    --warn-red: #c0392b;
+    --warn-orange: #e67e22;
+    --warn-yellow: #f39c12;
+    --ink: #1a1208;
+    --ink-muted: #7a6a55;
+    --stripe: rgba(192,57,43,0.06);
+    --border: rgba(192,57,43,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: auto;
+    overflow-x: hidden;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Kanit', sans-serif;
+    padding: 50px 24px 60px;
+    background-image:
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 28px,
+        var(--stripe) 28px,
+        var(--stripe) 30px
+      );
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  .danger-tape {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--warn-red);
+    color: #fff;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    padding: 8px 24px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    transform: rotate(-1deg);
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.15);
+  }
+
+  .danger-tape::before,
+  .danger-tape::after {
+    content: '⚠';
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    color: var(--ink);
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--warn-red);
+    position: relative;
+  }
+
+  h1 em::after {
+    content: '';
+    position: absolute;
+    bottom: 2px; left: 0; right: 0;
+    height: 4px;
+    background: var(--warn-yellow);
+    opacity: 0.6;
+    z-index: -1;
+  }
+
+  .subtitle {
+    color: var(--ink-muted);
+    font-size: 1rem;
+    font-weight: 300;
+  }
+
+  /* ===== COUNTER ===== */
+  .counter-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+
+  .counter-bar span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 1px;
+  }
+
+  .progress-track {
+    width: 200px;
+    height: 6px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--warn-red), var(--warn-orange));
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.6s ease;
+  }
+
+  /* ===== GRID ===== */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ===== CARD ===== */
+  .card {
+    background: #fff;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: popIn 0.5s ease both;
+    box-shadow: 3px 3px 0 var(--border);
+    overflow: hidden;
+  }
+
+  .card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 rgba(192,57,43,0.2);
+  }
+
+  .card.expanded {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 rgba(192,57,43,0.25);
+  }
+
+  /* Warning stripe top */
+  .card-stripe {
+    height: 6px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--card-color) 0px,
+      var(--card-color) 16px,
+      #1a1208 16px,
+      #1a1208 24px
+    );
+  }
+
+  .card:nth-child(1)  { --card-color: #c0392b; animation-delay: 0.05s }
+  .card:nth-child(2)  { --card-color: #d44000; animation-delay: 0.10s }
+  .card:nth-child(3)  { --card-color: #e67e22; animation-delay: 0.15s }
+  .card:nth-child(4)  { --card-color: #c0392b; animation-delay: 0.20s }
+  .card:nth-child(5)  { --card-color: #b7950b; animation-delay: 0.25s }
+  .card:nth-child(6)  { --card-color: #d44000; animation-delay: 0.30s }
+  .card:nth-child(7)  { --card-color: #c0392b; animation-delay: 0.35s }
+  .card:nth-child(8)  { --card-color: #e67e22; animation-delay: 0.40s }
+  .card:nth-child(9)  { --card-color: #b7950b; animation-delay: 0.45s }
+  .card:nth-child(10) { --card-color: #c0392b; animation-delay: 0.50s }
+
+  .card-front {
+    padding: 24px;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+
+  .num-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--card-color);
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .card-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+
+  .card-preview {
+    font-size: 0.875rem;
+    color: var(--ink-muted);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .toggle-hint {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--card-color);
+    letter-spacing: 1px;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: gap 0.2s;
+  }
+
+  .card:hover .toggle-hint { gap: 10px; }
+
+  .toggle-arrow {
+    display: inline-block;
+    font-size: 14px;
+    transition: transform 0.3s ease;
+  }
+
+  .card.expanded .toggle-arrow { transform: rotate(90deg); }
+
+  /* ===== EXPANDABLE DETAIL ===== */
+  .card-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card.expanded .card-detail {
+    max-height: 400px;
+  }
+
+  .detail-inner {
+    padding: 0 24px 24px;
+    border-top: 1px dashed var(--border);
+    margin-top: 4px;
+    padding-top: 18px;
+  }
+
+  .detail-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--card-color);
+    margin-bottom: 8px;
+  }
+
+  .detail-text {
+    font-size: 0.875rem;
+    color: #4a3c2e;
+    line-height: 1.75;
+    font-weight: 300;
+    margin-bottom: 14px;
+  }
+
+  .warn-box {
+    background: rgba(192,57,43,0.06);
+    border: 1px solid rgba(192,57,43,0.2);
+    border-left: 3px solid var(--card-color);
+    border-radius: 3px;
+    padding: 12px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: #6b3c28;
+    line-height: 1.65;
+  }
+
+  .warn-box .wlabel {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--card-color);
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.92) translateY(16px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    text-align: center;
+    margin-top: 60px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 1px;
+  }
+  .footer strong { color: var(--warn-red); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    body { padding: 30px 14px 50px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="danger-tape">WARNING · ข้อควรระวัง · WARNING</div>
+  <h1>10 ข้อควรระวัง<br>สำหรับ <em>มือใหม่ AI</em></h1>
+  <p class="subtitle">คลิกที่การ์ดเพื่อดูรายละเอียดและวิธีป้องกัน</p>
+</div>
+
+<div class="counter-bar">
+  <span>อ่านแล้ว</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span id="progressText">0 / 10</span>
+</div>
+
+<div class="grid" id="cardGrid">
+
+  <!-- 01 -->
+  <div class="card" onclick="toggle(this)">
+    <div class="card-stripe"></div>
+    <div class="card-front">
+      <div class="card-top">
+        <span class="num-badge">WARN-01</span>
+        <span class="card-icon">🤥</span>
+        <div class="card-title">AI โกหกได้ แต่ดูน่าเชื่อถือมาก</div>
+      </div>
+      <div class="card-preview">AI สามารถตอบข้อมูลที่ผิดได้อย่างมั่นใจ โดยไม่มีสัญญาณเตือน</div>
+      <div class="toggle-hint"><span class="toggle-arrow">▶</span> ดูรายละเอียด</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-inner">
+        <div class="detail-label">ปัญหาที่พบบ่อย</div>
+        <div class="detail-text">AI มีพฤติกรรมที่เรียกว่า "Hallucination" — สร้างข้อมูลที่ฟังดูสมเหตุสมผล แต่ผิดหรือไม่มีอยู่จริง เช่น Citation ปลอม, Version ผิด, Command ที่ไม่มีอยู่</div>
+        <div class="warn-box">
+          <span class="wlabel">⚠ วิธีป้องกัน</span>
+          ตรวจสอบข้อมูลสำคัญกับ Official Docs เสมอ โดยเฉพาะ Command, API, และตัวเลข
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 -->
+  <div class="card" onclick="toggle(this)">
+    <div class="card-stripe"></div>
+    <div class="card-front">
+      <div class="card-top">
+        <span class="num-badge">WARN-02</span>
+        <span class="card-icon">🔒</span>
+        <div class="card-title">อย่าใส่ข้อมูลลับหรือ Credential ลงไป</div>
+      </div>
+      <div class="card-preview">Password, API Key, Token ไม่ควรถูก paste ลงใน AI chat</div>
+      <div class="toggle-hint"><span class="toggle-arrow">▶</span> ดูรายละเอียด</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-inner">
+        <div class="detail-label">ความเสี่ยง</div>
+        <div class="detail-text">ข้อมูลที่พิมพ์ใน AI อาจถูกใช้เพื่อ Training หรือถูกเก็บในระบบ Cloud ของ Vendor ใส่แค่ Placeholder เช่น &lt;YOUR_API_KEY&gt; แทน</div>
+        <div class="warn-box">
+          <span class="wlabel">⚠ วิธีป้องกัน</span>
+          ใช้ [PLACEHOLDER] แทนข้อมูลจริง · ตรวจสอบ Privacy Policy ของ AI ที่ใช้ · อย่าใส่ข้อมูล Production
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 -->
+  <div class="card" onclick="toggle(this)">
+    <div class="card-stripe"></div>
+    <div class="card-front">
+      <div class="card-top">
+        <span class="num-badge">WARN-03</span>
+        <span class="card-icon">📅</span>
+        <div class="card-title">ข้อมูล AI มี Knowledge Cutoff</div>
+      </div>
+      <div class="card-preview">AI ไม่รู้เหตุการณ์หลัง Training Date — ข้อมูลอาจล้าสมัย</div>
+      <div class="toggle-hint"><span class="toggle-arrow">▶</span> ดูรายละเอียด</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-inner">
+        <div class="detail-label">ตัวอย่างที่อันตราย</div>
+        <div class="detail-text">ถามเรื่อง CVE ใหม่, Library Version ล่าสุด, Patch Security ที่เพิ่งออก — AI อาจตอบแบบเก่าที่มี Bug หรือ Vulnerability อยู่แล้ว</div>
+        <div class="warn-box">
+          <span class="wlabel">⚠ วิธีป้องกัน</span>
+          สำหรับ Security, Patch, Version ล่าสุด → ตรวจสอบกับ Vendor Site โดยตรง อย่าเชื่อ AI อย่างเดียว
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 -->
+  <div class="card" onclick="toggle(this)">
+    <div class="card-stripe"></div>
+    <div class="card-front">
+      <div class="card-top">
+        <span class="num-badge">WARN-04</span>
+        <span class="card-icon">💥</span>
+        <div class="card-title">อย่า Run Script จาก AI โดยไม่ Review</div>
+      </div>
+      <div class="card-preview">Script ที่ดูถูกอาจมี Logic ผิดพลาดร้ายแรงซ่อนอยู่</div>
+      <div class="toggle-hint"><span class="toggle-arrow">▶</span> ดูรายละเอียด</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-inner">
+        <div class="detail-label">กรณีอันตราย</div>
+        <div class="detail-text">rm -rf ผิด Path, DROP TABLE ผิด Database, iptables Rule ที่ block ตัวเองออกจาก Server — AI อาจให้ Script ที่ใช้งานได้แต่ Logic ผิดพลาดในบาง Edge Case</div>
+        <div class="warn-box">
+          <span class="wlabel">⚠ วิธีป้องกัน</span>
+          อ่านทุกบรรทัด · Test ใน Dev/Staging ก่อน · ขอให้ AI อธิบาย Logic ก่อน Run เสมอ
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 -->
+  <div class="card" onclick="toggle(this)">
+    <div class="card-stripe"></div>
+    <div class="card-front">
+      <div class="card-top">
+        <span class="num-badge">WARN-05</span>
+        <span class="card-icon">⚖️</span>
+        <div class="card-title">Copyright & ลิขสิทธิ์ของ Content ที่ AI สร้าง</div>
+      </div>
+      <div class="card-preview">งานที่ AI สร้างอาจมีปัญหาด้านกฎหมายในบางประเทศ</div>
+      <div class="toggle-hint"><span class="toggle-arrow">▶</span> ดูรายละเอียด</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-inner">
+        <div class="detail-label">ประเด็นที่ต้องระวัง</div>
+        <div class="detail-text">AI อาจสร้าง Code หรือ Content ที่คล้ายกับงานที่มี License เช่น GPL, MIT ซึ่งมีข้อกำหนดการใช้งาน รวมถึง AI Image ที่ชุดข้อมูล Training อาจมีปัญหา</div>
+        <div class="warn-box">
+          <span class="wlabel">⚠ วิธีป้องกัน</span>
+          ตรวจสอบ TOS ของ AI Tool ที่ใช้ · ปรึกษาฝ่ายกฎหมายก่อนใช้ใน Commercial Project
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 -->
+  <div class="card" onclick="toggle(this)">
+    <div class="card-stripe"></div>
+    <div class="card-front">
+      <div class="card-top">
+        <span class="num-badge">WARN-06</span>
+        <span class="card-icon">🧠</span>
+        <div class="card-title">Over-reliance — พึ่ง AI มากเกินไป</div>
+      </div>
+      <div class="card-preview">ทักษะของคุณจะเสื่อมถอยถ้าปล่อยให้ AI คิดแทนทุกอย่าง</div>
+      <div class="toggle-hint"><span class="toggle-arrow">▶</span> ดูรายละเอียด</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-inner">
+        <div class="detail-label">ผลกระทบระยะยาว</div>
+        <div class="detail-text">คนที่พึ่ง AI ทั้งหมดจะสูญเสีย Problem-solving skill ไปเรื่อยๆ เมื่อเจอสถานการณ์ที่ AI ตอบผิดหรือไม่มี AI จะไม่สามารถแก้ปัญหาได้เอง</div>
+        <div class="warn-box">
+          <span class="wlabel">⚠ วิธีป้องกัน</span>
+          ใช้ AI เป็น Assistant ไม่ใช่ Replacement · ยังต้องเข้าใจ Concept พื้นฐานด้วยตัวเอง
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 -->
+  <div class="card" onclick="toggle(this)">
+    <div class="card-stripe"></div>
+    <div class="card-front">
+      <div class="card-top">
+        <span class="num-badge">WARN-07</span>
+        <span class="card-icon">🏢</span>
+        <div class="card-title">อย่าใส่ข้อมูลองค์กรที่เป็นความลับ</div>
+      </div>
+      <div class="card-preview">ข้อมูล Internal, Financial, HR ไม่ควรอยู่ใน AI Chat สาธารณะ</div>
+      <div class="toggle-hint"><span class="toggle-arrow">▶</span> ดูรายละเอียด</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-inner">
+        <div class="detail-label">ตัวอย่างที่เกิดขึ้นจริง</div>
+        <div class="detail-text">Samsung พนักงาน Leak Source Code สำคัญผ่าน ChatGPT ในปี 2023 ส่งผลให้บริษัทต้องแบน AI Tool ทั้งหมด — ข้อมูล Internal อาจถูก Vendor นำไป Train ต่อได้</div>
+        <div class="warn-box">
+          <span class="wlabel">⚠ วิธีป้องกัน</span>
+          ใช้ Private/Enterprise AI Plan ที่ No-training guarantee · ตั้ง Policy การใช้ AI ในองค์กร
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 -->
+  <div class="card" onclick="toggle(this)">
+    <div class="card-stripe"></div>
+    <div class="card-front">
+      <div class="card-top">
+        <span class="num-badge">WARN-08</span>
+        <span class="card-icon">😤</span>
+        <div class="card-title">AI เห็นด้วยกับคุณเสมอ (Sycophancy)</div>
+      </div>
+      <div class="card-preview">AI มีแนวโน้มยืนยัน Idea ของคุณแม้มันผิด เพื่อให้คุณพอใจ</div>
+      <div class="toggle-hint"><span class="toggle-arrow">▶</span> ดูรายละเอียด</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-inner">
+        <div class="detail-label">ทำไมถึงเป็นอันตราย</div>
+        <div class="detail-text">ถ้าคุณตัดสินใจผิดแล้วถาม AI ว่า "แผนนี้ดีไหม?" AI มักจะตอบว่า "ดีมาก!" แทนที่จะชี้จุดอ่อน ทำให้ Confirmation Bias แย่ลง</div>
+        <div class="warn-box">
+          <span class="wlabel">⚠ วิธีป้องกัน</span>
+          ขอให้ AI "โต้แย้งและหาจุดอ่อน" แทน · ถามว่า "มีอะไรที่ควรระวังบ้าง?"
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 09 -->
+  <div class="card" onclick="toggle(this)">
+    <div class="card-stripe"></div>
+    <div class="card-front">
+      <div class="card-top">
+        <span class="num-badge">WARN-09</span>
+        <span class="card-icon">🌐</span>
+        <div class="card-title">AI แปล / สรุป อาจเปลี่ยนความหมาย</div>
+      </div>
+      <div class="card-preview">การแปลหรือสรุปเอกสารสำคัญอาจสูญเสีย Nuance ที่สำคัญ</div>
+      <div class="toggle-hint"><span class="toggle-arrow">▶</span> ดูรายละเอียด</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-inner">
+        <div class="detail-label">กรณีที่เสี่ยงสูง</div>
+        <div class="detail-text">สัญญา, เอกสารกฎหมาย, Medical Report, ข้อกำหนด Compliance — AI อาจแปลหรือสรุปผิด โดยเฉพาะ Technical Term หรือ Legal Jargon เฉพาะทาง</div>
+        <div class="warn-box">
+          <span class="wlabel">⚠ วิธีป้องกัน</span>
+          งานสำคัญต้องให้ผู้เชี่ยวชาญ Review เสมอ · ใช้ AI เป็น Draft เท่านั้น ไม่ใช่ Final
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10 -->
+  <div class="card" onclick="toggle(this)">
+    <div class="card-stripe"></div>
+    <div class="card-front">
+      <div class="card-top">
+        <span class="num-badge">WARN-10</span>
+        <span class="card-icon">🎭</span>
+        <div class="card-title">Bias ใน AI — ผลลัพธ์ไม่ Neutral เสมอ</div>
+      </div>
+      <div class="card-preview">AI มี Bias จากข้อมูล Training ที่อาจส่งผลต่อคำแนะนำ</div>
+      <div class="toggle-hint"><span class="toggle-arrow">▶</span> ดูรายละเอียด</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-inner">
+        <div class="detail-label">ตัวอย่าง Bias ที่พบ</div>
+        <div class="detail-text">AI อาจแนะนำ Tool, Framework, หรือ Vendor ที่มีข้อมูลใน Training มาก กว่า Solution ที่ดีกว่าแต่มีข้อมูลน้อย หรืออาจมี Cultural Bias ในคำตอบที่เกี่ยวกับสังคมและวัฒนธรรม</div>
+        <div class="warn-box">
+          <span class="wlabel">⚠ วิธีป้องกัน</span>
+          ขอ Option หลายๆ ทาง · ถามว่า "มี Alternative อื่นไหม?" · ใช้ข้อมูลจากหลายแหล่ง
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer" style="margin-top:50px">
+  <strong>⚠ รู้ก่อน ปลอดภัยกว่า</strong> · AI Warnings for Beginners · Claude AI · 2026
+</div>
+
+<script>
+  const read = new Set();
+
+  function toggle(card) {
+    const isExpanded = card.classList.contains('expanded');
+    card.classList.toggle('expanded', !isExpanded);
+
+    const idx = [...card.parentElement.children].indexOf(card);
+    if (!isExpanded) {
+      read.add(idx);
+    }
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const total = 10;
+    const count = read.size;
+    const pct = (count / total) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = count + ' / ' + total;
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-Frame-Options" content="ALLOWALL">
+<title>10 AI Prompts สำหรับพนักงานออฟฟิศ</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1724;
+    --card-bg: #161f30;
+    --card-hover: #1c2840;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+    --accent3: #34d399;
+    --gold: #fbbf24;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --border: rgba(56,189,248,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: auto; overflow-x: hidden; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Prompt', sans-serif;
+    padding: 50px 24px 70px;
+    background-image:
+      radial-gradient(ellipse at 10% 0%, rgba(56,189,248,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 100%, rgba(129,140,248,0.08) 0%, transparent 50%);
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+
+  .tag-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    padding: 5px 14px;
+    border-radius: 100px;
+    text-transform: uppercase;
+  }
+
+  .tag-blue  { background: rgba(56,189,248,0.15); color: var(--accent); border: 1px solid rgba(56,189,248,0.25); }
+  .tag-purple{ background: rgba(129,140,248,0.15); color: var(--accent2); border: 1px solid rgba(129,140,248,0.25); }
+  .tag-green { background: rgba(52,211,153,0.15); color: var(--accent3); border: 1px solid rgba(52,211,153,0.25); }
+
+  h1 {
+    font-size: clamp(1.9rem, 5vw, 3rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .hl { color: var(--accent); }
+  .hl2 { color: var(--gold); }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 300;
+  }
+
+  /* CATEGORY FILTER */
+  .filter-bar {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+
+  .filter-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 7px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: rgba(56,189,248,0.12);
+    color: var(--accent);
+    border-color: rgba(56,189,248,0.3);
+  }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 18px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+    animation: riseUp 0.5s ease both;
+    position: relative;
+  }
+
+  .card:hover {
+    background: var(--card-hover);
+    border-color: rgba(56,189,248,0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(56,189,248,0.1);
+  }
+
+  .card.hidden { display: none; }
+
+  .card:nth-child(1)  { animation-delay: .04s }
+  .card:nth-child(2)  { animation-delay: .08s }
+  .card:nth-child(3)  { animation-delay: .12s }
+  .card:nth-child(4)  { animation-delay: .16s }
+  .card:nth-child(5)  { animation-delay: .20s }
+  .card:nth-child(6)  { animation-delay: .24s }
+  .card:nth-child(7)  { animation-delay: .28s }
+  .card:nth-child(8)  { animation-delay: .32s }
+  .card:nth-child(9)  { animation-delay: .36s }
+  .card:nth-child(10) { animation-delay: .40s }
+
+  /* CARD TOP BAR */
+  .card-bar {
+    height: 3px;
+    background: var(--c-accent, var(--accent));
+    opacity: 0.7;
+  }
+
+  .card-front { padding: 22px; }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .cat-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    background: var(--c-bg, rgba(56,189,248,0.1));
+    color: var(--c-accent, var(--accent));
+    border: 1px solid var(--c-border, rgba(56,189,248,0.2));
+  }
+
+  .card-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .card-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .card-icon { font-size: 1.7rem; flex-shrink: 0; line-height: 1; }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    line-height: 1.35;
+  }
+
+  .card-desc {
+    font-size: 0.855rem;
+    color: var(--muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .expand-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--c-accent, var(--accent));
+    letter-spacing: 1px;
+    font-weight: 600;
+    text-transform: uppercase;
+    opacity: 0.7;
+    transition: opacity 0.2s, gap 0.2s;
+  }
+
+  .card:hover .expand-hint { opacity: 1; gap: 9px; }
+
+  .arr {
+    display: inline-block;
+    transition: transform 0.3s ease;
+    font-size: 12px;
+  }
+
+  .card.expanded .arr { transform: rotate(90deg); }
+
+  /* EXPANDABLE */
+  .card-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .card.expanded .card-detail { max-height: 500px; }
+
+  .detail-body {
+    margin: 0 22px 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+
+  .prompt-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--c-accent, var(--accent));
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .prompt-box {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--c-accent, var(--accent));
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: #94d2f0;
+    line-height: 1.7;
+    margin-bottom: 12px;
+    position: relative;
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: rgba(56,189,248,0.1);
+    border: 1px solid rgba(56,189,248,0.2);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .copy-btn:hover { background: rgba(56,189,248,0.2); }
+  .copy-btn.copied { color: var(--accent3); border-color: var(--accent3); }
+
+  .tip-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .tip-text {
+    font-size: 0.82rem;
+    color: #7a8fa8;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* ANIMATIONS */
+  @keyframes riseUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    margin-top: 56px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 30px 14px 50px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="tag-row">
+    <span class="tag tag-blue">Office AI</span>
+    <span class="tag tag-purple">Productivity</span>
+    <span class="tag tag-green">Ready to Use</span>
+  </div>
+  <h1>10 <span class="hl">AI Prompt</span><br>สำหรับ<span class="hl2"> พนักงานออฟฟิศ</span></h1>
+  <p class="subtitle">คัดลอก Prompt ไปใช้ได้เลย · คลิกการ์ดเพื่อดู Prompt จริง</p>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filter('all', this)">ทั้งหมด</button>
+  <button class="filter-btn" onclick="filter('email', this)">📧 Email</button>
+  <button class="filter-btn" onclick="filter('meeting', this)">📅 Meeting</button>
+  <button class="filter-btn" onclick="filter('doc', this)">📄 Document</button>
+  <button class="filter-btn" onclick="filter('analysis', this)">📊 Analysis</button>
+  <button class="filter-btn" onclick="filter('hr', this)">👥 HR</button>
+</div>
+
+<div class="grid" id="grid">
+
+  <!-- 01 EMAIL -->
+  <div class="card" data-cat="email" onclick="toggle(this)"
+    style="--c-accent:#38bdf8;--c-bg:rgba(56,189,248,0.08);--c-border:rgba(56,189,248,0.2)">
+    <div class="card-bar" style="background:#38bdf8"></div>
+    <div class="card-front">
+      <div class="card-meta">
+        <span class="cat-badge">📧 Email</span>
+        <span class="card-num">#01</span>
+      </div>
+      <div class="card-title-row">
+        <span class="card-icon">✉️</span>
+        <div class="card-title">เขียน Email ตอบลูกค้าอย่างมืออาชีพ</div>
+      </div>
+      <div class="card-desc">แปลงข้อความหยาบหรือยาวเหยียดให้กลายเป็น Email สุภาพ กระชับ และ Professional ได้ทันที</div>
+      <div class="expand-hint"><span class="arr">▶</span> ดู Prompt & วิธีใช้</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-body">
+        <div class="prompt-label">✦ Prompt Template</div>
+        <div class="prompt-box">
+          <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          ช่วยเขียน Email ตอบลูกค้าในสถานการณ์นี้: [อธิบายสถานการณ์]<br>
+          โทน: สุภาพ เป็นมืออาชีพ แต่ไม่เป็นทางการเกินไป<br>
+          ความยาว: ไม่เกิน 5 ประโยค<br>
+          ลงท้ายด้วย Call-to-action ที่ชัดเจน
+        </div>
+        <div class="tip-label">💡 Pro Tip</div>
+        <div class="tip-text">ระบุ Tone ที่ต้องการ เช่น "เป็นกันเอง", "เป็นทางการ", "เห็นอกเห็นใจ" เพื่อให้ผลลัพธ์ตรงกับสถานการณ์จริง</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 MEETING -->
+  <div class="card" data-cat="meeting" onclick="toggle(this)"
+    style="--c-accent:#818cf8;--c-bg:rgba(129,140,248,0.08);--c-border:rgba(129,140,248,0.2)">
+    <div class="card-bar" style="background:#818cf8"></div>
+    <div class="card-front">
+      <div class="card-meta">
+        <span class="cat-badge" style="background:rgba(129,140,248,0.1);color:#818cf8;border-color:rgba(129,140,248,0.25)">📅 Meeting</span>
+        <span class="card-num">#02</span>
+      </div>
+      <div class="card-title-row">
+        <span class="card-icon">📝</span>
+        <div class="card-title">สรุปประชุมจาก Notes ที่กระจัดกระจาย</div>
+      </div>
+      <div class="card-desc">เอา Notes ยุ่งเหยิงจากการประชุมมาให้ AI จัดระเบียบเป็น MoM พร้อม Action Items</div>
+      <div class="expand-hint"><span class="arr">▶</span> ดู Prompt & วิธีใช้</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-body">
+        <div class="prompt-label">✦ Prompt Template</div>
+        <div class="prompt-box" style="--c-accent:#818cf8;border-left-color:#818cf8;color:#b4b8f8">
+          <button class="copy-btn" onclick="copyPrompt(this)" style="color:#818cf8;border-color:rgba(129,140,248,0.3)">Copy</button>
+          นี่คือ Notes การประชุมของฉัน: [วาง Notes ที่นี่]<br><br>
+          ช่วยสรุปเป็น MoM โดยแบ่งเป็น:<br>
+          1. สรุปประเด็นหลัก<br>
+          2. มติที่ประชุม<br>
+          3. Action Items (ระบุ ผู้รับผิดชอบ + Deadline)<br>
+          4. ประเด็นที่ยังค้างอยู่
+        </div>
+        <div class="tip-label">💡 Pro Tip</div>
+        <div class="tip-text">ใส่ชื่อผู้เข้าร่วมประชุมด้วย เพื่อให้ AI assign Action Items ได้ถูกต้องตามที่พูดในประชุม</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 DOC -->
+  <div class="card" data-cat="doc" onclick="toggle(this)"
+    style="--c-accent:#34d399;--c-bg:rgba(52,211,153,0.08);--c-border:rgba(52,211,153,0.2)">
+    <div class="card-bar" style="background:#34d399"></div>
+    <div class="card-front">
+      <div class="card-meta">
+        <span class="cat-badge" style="background:rgba(52,211,153,0.1);color:#34d399;border-color:rgba(52,211,153,0.25)">📄 Document</span>
+        <span class="card-num">#03</span>
+      </div>
+      <div class="card-title-row">
+        <span class="card-icon">📊</span>
+        <div class="card-title">เขียน Report / สรุปผลงานประจำเดือน</div>
+      </div>
+      <div class="card-desc">ป้อนข้อมูลดิบหรือตัวเลข แล้วให้ AI แปลงเป็น Report ที่อ่านง่ายและดูเป็นมืออาชีพ</div>
+      <div class="expand-hint"><span class="arr">▶</span> ดู Prompt & วิธีใช้</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-body">
+        <div class="prompt-label">✦ Prompt Template</div>
+        <div class="prompt-box" style="border-left-color:#34d399;color:#86e8c8">
+          <button class="copy-btn" onclick="copyPrompt(this)" style="color:#34d399;border-color:rgba(52,211,153,0.3)">Copy</button>
+          ช่วยเขียนรายงานสรุปผลงานเดือน [เดือน]<br>
+          แผนก: [ชื่อแผนก]<br>
+          ข้อมูลที่มี: [ใส่ตัวเลข/ข้อมูลดิบ]<br><br>
+          โครงสร้างที่ต้องการ:<br>
+          - Executive Summary (3 ประโยค)<br>
+          - ผลลัพธ์หลักที่ทำได้<br>
+          - ความท้าทายและวิธีแก้ไข<br>
+          - แผนเดือนถัดไป
+        </div>
+        <div class="tip-label">💡 Pro Tip</div>
+        <div class="tip-text">ระบุว่า Report นี้จะส่งให้ใคร (หัวหน้า, ลูกค้า, Board) เพื่อให้ AI ปรับ Tone และ Level of Detail ได้เหมาะสม</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 ANALYSIS -->
+  <div class="card" data-cat="analysis" onclick="toggle(this)"
+    style="--c-accent:#fbbf24;--c-bg:rgba(251,191,36,0.08);--c-border:rgba(251,191,36,0.2)">
+    <div class="card-bar" style="background:#fbbf24"></div>
+    <div class="card-front">
+      <div class="card-meta">
+        <span class="cat-badge" style="background:rgba(251,191,36,0.1);color:#fbbf24;border-color:rgba(251,191,36,0.25)">📊 Analysis</span>
+        <span class="card-num">#04</span>
+      </div>
+      <div class="card-title-row">
+        <span class="card-icon">🔍</span>
+        <div class="card-title">วิเคราะห์ข้อมูลและหาข้อสรุป</div>
+      </div>
+      <div class="card-desc">วาง Data หรือตาราง แล้วให้ AI ช่วยตีความ หา Pattern และ Present เป็น Insight</div>
+      <div class="expand-hint"><span class="arr">▶</span> ดู Prompt & วิธีใช้</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-body">
+        <div class="prompt-label">✦ Prompt Template</div>
+        <div class="prompt-box" style="border-left-color:#fbbf24;color:#fde68a">
+          <button class="copy-btn" onclick="copyPrompt(this)" style="color:#fbbf24;border-color:rgba(251,191,36,0.3)">Copy</button>
+          นี่คือข้อมูลของฉัน: [วาง Data/ตาราง]<br><br>
+          ช่วยวิเคราะห์และบอกฉัน:<br>
+          1. Trend หรือ Pattern ที่น่าสนใจ<br>
+          2. จุดที่ดีที่สุดและแย่ที่สุด<br>
+          3. สิ่งที่ควรให้ความสนใจเป็นพิเศษ<br>
+          4. ข้อเสนอแนะ 3 ข้อที่ทำได้จริง
+        </div>
+        <div class="tip-label">💡 Pro Tip</div>
+        <div class="tip-text">บอก Context ของ Business ด้วย เช่น "เราขายสินค้า B2B" เพื่อให้ Insight มีความเกี่ยวข้องกับธุรกิจจริงๆ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 HR -->
+  <div class="card" data-cat="hr" onclick="toggle(this)"
+    style="--c-accent:#f472b6;--c-bg:rgba(244,114,182,0.08);--c-border:rgba(244,114,182,0.2)">
+    <div class="card-bar" style="background:#f472b6"></div>
+    <div class="card-front">
+      <div class="card-meta">
+        <span class="cat-badge" style="background:rgba(244,114,182,0.1);color:#f472b6;border-color:rgba(244,114,182,0.25)">👥 HR</span>
+        <span class="card-num">#05</span>
+      </div>
+      <div class="card-title-row">
+        <span class="card-icon">💬</span>
+        <div class="card-title">เตรียมคำพูดสำหรับ Feedback ที่ยาก</div>
+      </div>
+      <div class="card-desc">ไม่รู้จะพูดยังไงกับทีมหรือลูกน้อง? ให้ AI ช่วย Draft คำพูด Feedback เชิงสร้างสรรค์</div>
+      <div class="expand-hint"><span class="arr">▶</span> ดู Prompt & วิธีใช้</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-body">
+        <div class="prompt-label">✦ Prompt Template</div>
+        <div class="prompt-box" style="border-left-color:#f472b6;color:#fbb6d4">
+          <button class="copy-btn" onclick="copyPrompt(this)" style="color:#f472b6;border-color:rgba(244,114,182,0.3)">Copy</button>
+          ฉันต้องให้ Feedback กับ [ตำแหน่ง] เกี่ยวกับ: [ปัญหา]<br>
+          สถานการณ์จริง: [อธิบายสั้นๆ]<br><br>
+          ช่วย Draft คำพูด Feedback ที่:<br>
+          - ตรงประเด็น ไม่อ้อมค้อม<br>
+          - สร้างสรรค์ ไม่โจมตีตัวตน<br>
+          - มี Example ที่ชัดเจน<br>
+          - จบด้วยการให้กำลังใจ
+        </div>
+        <div class="tip-label">💡 Pro Tip</div>
+        <div class="tip-text">เพิ่ม "ใช้ SBI Framework (Situation-Behavior-Impact)" ใน Prompt เพื่อให้ได้ Feedback ที่มีโครงสร้างชัดเจน</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 DOC -->
+  <div class="card" data-cat="doc" onclick="toggle(this)"
+    style="--c-accent:#22d3ee;--c-bg:rgba(34,211,238,0.08);--c-border:rgba(34,211,238,0.2)">
+    <div class="card-bar" style="background:#22d3ee"></div>
+    <div class="card-front">
+      <div class="card-meta">
+        <span class="cat-badge" style="background:rgba(34,211,238,0.1);color:#22d3ee;border-color:rgba(34,211,238,0.25)">📄 Document</span>
+        <span class="card-num">#06</span>
+      </div>
+      <div class="card-title-row">
+        <span class="card-icon">📋</span>
+        <div class="card-title">สร้าง Checklist และ SOP อย่างรวดเร็ว</div>
+      </div>
+      <div class="card-desc">อธิบาย Process ที่ต้องการ แล้วให้ AI สร้าง Checklist หรือ SOP ที่ทีมสามารถใช้ได้ทันที</div>
+      <div class="expand-hint"><span class="arr">▶</span> ดู Prompt & วิธีใช้</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-body">
+        <div class="prompt-label">✦ Prompt Template</div>
+        <div class="prompt-box" style="border-left-color:#22d3ee;color:#a5f3fc">
+          <button class="copy-btn" onclick="copyPrompt(this)" style="color:#22d3ee;border-color:rgba(34,211,238,0.3)">Copy</button>
+          ช่วยสร้าง SOP สำหรับ: [ชื่อ Process]<br>
+          แผนก: [ชื่อแผนก]<br>
+          ผู้ใช้งาน: [ระดับ/ตำแหน่ง]<br>
+          Tool ที่ใช้: [ระบุ Software/System]<br><br>
+          รูปแบบ: Step-by-step พร้อม Checklist<br>
+          ใส่ Warning สำหรับขั้นตอนที่ต้องระวัง
+        </div>
+        <div class="tip-label">💡 Pro Tip</div>
+        <div class="tip-text">ขอให้ AI ใส่ "หมายเหตุ" และ "ข้อผิดพลาดที่พบบ่อย" ในแต่ละขั้นตอน เพื่อ SOP ที่สมบูรณ์กว่า</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 EMAIL -->
+  <div class="card" data-cat="email" onclick="toggle(this)"
+    style="--c-accent:#a78bfa;--c-bg:rgba(167,139,250,0.08);--c-border:rgba(167,139,250,0.2)">
+    <div class="card-bar" style="background:#a78bfa"></div>
+    <div class="card-front">
+      <div class="card-meta">
+        <span class="cat-badge" style="background:rgba(167,139,250,0.1);color:#a78bfa;border-color:rgba(167,139,250,0.25)">📧 Email</span>
+        <span class="card-num">#07</span>
+      </div>
+      <div class="card-title-row">
+        <span class="card-icon">🤝</span>
+        <div class="card-title">เขียน Email ขอความร่วมมือหรือเจรจา</div>
+      </div>
+      <div class="card-desc">เขียน Email โน้มน้าว เจรจาต่อรอง หรือขอความช่วยเหลือจากฝ่ายอื่นอย่างมีกลยุทธ์</div>
+      <div class="expand-hint"><span class="arr">▶</span> ดู Prompt & วิธีใช้</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-body">
+        <div class="prompt-label">✦ Prompt Template</div>
+        <div class="prompt-box" style="border-left-color:#a78bfa;color:#c4b5fd">
+          <button class="copy-btn" onclick="copyPrompt(this)" style="color:#a78bfa;border-color:rgba(167,139,250,0.3)">Copy</button>
+          ฉันต้องเขียน Email ถึง [ชื่อ/ตำแหน่ง]<br>
+          เป้าหมาย: [สิ่งที่ต้องการ]<br>
+          บริบท: [ความสัมพันธ์และสถานการณ์]<br>
+          ข้อจำกัด: [สิ่งที่เสนอได้/ไม่ได้]<br><br>
+          เขียน Email ที่ชัดเจน น่าเชื่อถือ<br>
+          แสดง Benefit สำหรับทั้งสองฝ่าย<br>
+          ง่ายต่อการตอบตกลง
+        </div>
+        <div class="tip-label">💡 Pro Tip</div>
+        <div class="tip-text">ระบุ "อะไรที่อีกฝ่ายจะได้ประโยชน์" ให้ AI ช่วย frame ข้อความในมุมของ Win-Win จะได้ Response Rate สูงขึ้น</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 MEETING -->
+  <div class="card" data-cat="meeting" onclick="toggle(this)"
+    style="--c-accent:#fb923c;--c-bg:rgba(251,146,60,0.08);--c-border:rgba(251,146,60,0.2)">
+    <div class="card-bar" style="background:#fb923c"></div>
+    <div class="card-front">
+      <div class="card-meta">
+        <span class="cat-badge" style="background:rgba(251,146,60,0.1);color:#fb923c;border-color:rgba(251,146,60,0.25)">📅 Meeting</span>
+        <span class="card-num">#08</span>
+      </div>
+      <div class="card-title-row">
+        <span class="card-icon">🗓️</span>
+        <div class="card-title">สร้าง Agenda ประชุมที่มีประสิทธิภาพ</div>
+      </div>
+      <div class="card-desc">บอก Topic และเวลา ให้ AI ออกแบบ Agenda ที่ใช้เวลาน้อยแต่ได้ผลลัพธ์ครบ</div>
+      <div class="expand-hint"><span class="arr">▶</span> ดู Prompt & วิธีใช้</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-body">
+        <div class="prompt-label">✦ Prompt Template</div>
+        <div class="prompt-box" style="border-left-color:#fb923c;color:#fed7aa">
+          <button class="copy-btn" onclick="copyPrompt(this)" style="color:#fb923c;border-color:rgba(251,146,60,0.3)">Copy</button>
+          ช่วยสร้าง Meeting Agenda สำหรับ:<br>
+          หัวข้อ: [เรื่องที่ประชุม]<br>
+          เวลาทั้งหมด: [X นาที/ชั่วโมง]<br>
+          ผู้เข้าร่วม: [จำนวน + ระดับ]<br>
+          Goal: [ต้องการ Decision/Update/Brainstorm]<br><br>
+          จัด Time Box แต่ละหัวข้อ<br>
+          ระบุว่าหัวข้อไหนต้องการ Decision
+        </div>
+        <div class="tip-label">💡 Pro Tip</div>
+        <div class="tip-text">ขอให้ AI เพิ่ม "Pre-read" ที่ควรส่งให้ผู้เข้าร่วมก่อนประชุม เพื่อลดเวลาอธิบาย Background ในห้องประชุม</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 09 ANALYSIS -->
+  <div class="card" data-cat="analysis" onclick="toggle(this)"
+    style="--c-accent:#4ade80;--c-bg:rgba(74,222,128,0.08);--c-border:rgba(74,222,128,0.2)">
+    <div class="card-bar" style="background:#4ade80"></div>
+    <div class="card-front">
+      <div class="card-meta">
+        <span class="cat-badge" style="background:rgba(74,222,128,0.1);color:#4ade80;border-color:rgba(74,222,128,0.25)">📊 Analysis</span>
+        <span class="card-num">#09</span>
+      </div>
+      <div class="card-title-row">
+        <span class="card-icon">⚖️</span>
+        <div class="card-title">เปรียบเทียบตัวเลือกและตัดสินใจ</div>
+      </div>
+      <div class="card-desc">มีหลายตัวเลือกแต่ตัดสินใจไม่ได้? ให้ AI ช่วยวิเคราะห์ Trade-off และแนะนำทาง</div>
+      <div class="expand-hint"><span class="arr">▶</span> ดู Prompt & วิธีใช้</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-body">
+        <div class="prompt-label">✦ Prompt Template</div>
+        <div class="prompt-box" style="border-left-color:#4ade80;color:#bbf7d0">
+          <button class="copy-btn" onclick="copyPrompt(this)" style="color:#4ade80;border-color:rgba(74,222,128,0.3)">Copy</button>
+          ฉันต้องตัดสินใจระหว่าง:<br>
+          ตัวเลือก A: [รายละเอียด]<br>
+          ตัวเลือก B: [รายละเอียด]<br>
+          ตัวเลือก C: [รายละเอียด ถ้ามี]<br><br>
+          เกณฑ์สำคัญ: [ระบุสิ่งที่สำคัญที่สุด]<br>
+          งบประมาณ/เวลา: [Constraint]<br><br>
+          ทำ Comparison Table และแนะนำตัวเลือกที่ดีที่สุดพร้อมเหตุผล
+        </div>
+        <div class="tip-label">💡 Pro Tip</div>
+        <div class="tip-text">ขอให้ AI "เล่น Devil's Advocate" กับตัวเลือกที่คุณโน้มเอียงอยู่ เพื่อหาจุดอ่อนที่อาจมองข้าม</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10 HR -->
+  <div class="card" data-cat="hr" onclick="toggle(this)"
+    style="--c-accent:#f87171;--c-bg:rgba(248,113,113,0.08);--c-border:rgba(248,113,113,0.2)">
+    <div class="card-bar" style="background:#f87171"></div>
+    <div class="card-front">
+      <div class="card-meta">
+        <span class="cat-badge" style="background:rgba(248,113,113,0.1);color:#f87171;border-color:rgba(248,113,113,0.25)">👥 HR</span>
+        <span class="card-num">#10</span>
+      </div>
+      <div class="card-title-row">
+        <span class="card-icon">🚀</span>
+        <div class="card-title">เขียน JD และ Interview Questions</div>
+      </div>
+      <div class="card-desc">สร้าง Job Description ที่ดึงดูดและ Interview Questions ที่คัดคนได้จริงในไม่กี่นาที</div>
+      <div class="expand-hint"><span class="arr">▶</span> ดู Prompt & วิธีใช้</div>
+    </div>
+    <div class="card-detail">
+      <div class="detail-body">
+        <div class="prompt-label">✦ Prompt Template</div>
+        <div class="prompt-box" style="border-left-color:#f87171;color:#fecaca">
+          <button class="copy-btn" onclick="copyPrompt(this)" style="color:#f87171;border-color:rgba(248,113,113,0.3)">Copy</button>
+          ช่วยสร้าง Job Description สำหรับ: [ตำแหน่ง]<br>
+          ทีม: [แผนก]<br>
+          Skill หลักที่ต้องการ: [3-5 ข้อ]<br>
+          Level: [Junior/Mid/Senior]<br>
+          Culture: [อธิบาย Culture บริษัท]<br><br>
+          พร้อม Interview Questions 5 ข้อ<br>
+          ที่เน้น Behavioral + Situational
+        </div>
+        <div class="tip-label">💡 Pro Tip</div>
+        <div class="tip-text">เพิ่ม "Red flags ที่ควรระวังจากคำตอบ" ใน Prompt เพื่อให้ AI ช่วยสร้าง Scoring Guide ควบคู่กับคำถาม</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer" style="margin-top:50px">
+  OFFICE AI PROMPTS · READY TO USE · CLAUDE AI · 2026
+</div>
+
+<script>
+  function toggle(card) {
+    card.classList.toggle('expanded');
+  }
+
+  function filter(cat, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.card').forEach(c => {
+      if (cat === 'all' || c.dataset.cat === cat) {
+        c.classList.remove('hidden');
+      } else {
+        c.classList.add('hidden');
+        c.classList.remove('expanded');
+      }
+    });
+  }
+
+  function copyPrompt(btn) {
+    const box = btn.parentElement;
+    const text = box.innerText.replace('Copy', '').replace('Copied!', '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>
