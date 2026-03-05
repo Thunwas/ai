@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-Frame-Options" content="ALLOWALL">
+<title>Canva AI Prompt Guide — Construction & Safety</title>
+<style>/* System fonts: Calibri / Tahoma */</style>
+<style>
+:root {
+  /* ── Canva Brand Palette ── */
+  --bg:      #0a0e1a;          /* deep navy — Canva dark bg */
+  --surface: #111827;          /* slightly lighter navy */
+  --card:    #161f35;          /* card surface */
+  --border:  rgba(126,87,255,0.18);
+
+  --text:    #e8eaf6;
+  --muted:   #5c6b8a;
+
+  /* Canva gradient: purple → cyan */
+  --canva-purple: #7c4dff;
+  --canva-teal:   #00c4cc;
+  --canva-blue:   #4a90d9;
+  --canva-pink:   #a259ff;
+  --canva-cyan:   #00e5d4;
+
+  /* accent replacements */
+  --orange: #a259ff;           /* was orange → now canva-purple */
+  --yellow: #00c4cc;           /* was yellow → now canva-teal */
+  --blue:   #4a90d9;           /* keep blue-ish */
+  --green:  #00e5d4;           /* was green → now canva-cyan */
+
+  --grad: linear-gradient(135deg, #7c4dff 0%, #00c4cc 100%);
+  --grad-soft: linear-gradient(135deg, rgba(124,77,255,.15) 0%, rgba(0,196,204,.12) 100%);
+
+  --r: 12px;
+  --font-main: 'Calibri', 'Tahoma', 'Segoe UI', sans-serif;
+  --font-mono: 'Tahoma', 'Calibri', 'Segoe UI', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:auto;overflow-x:hidden;}
+
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family: var(--font-main);
+  padding:44px 20px 80px;
+  background-image:
+    radial-gradient(ellipse at 5% 0%,   rgba(124,77,255,.13) 0%, transparent 50%),
+    radial-gradient(ellipse at 95% 100%, rgba(0,196,204,.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%,  rgba(74,144,217,.05) 0%, transparent 60%);
+}
+
+/* ── HEADER ── */
+.header{text-align:center;margin-bottom:48px;}
+.site-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-main);
+  font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
+  padding:7px 20px;border-radius:99px;
+  background: var(--grad-soft);
+  border:1px solid rgba(124,77,255,.35);
+  color: var(--canva-cyan); margin-bottom:22px;
+}
+h1{
+  font-family:var(--font-main);
+  font-size:clamp(2.2rem,6vw,4rem);font-weight:900;
+  line-height:1.05;margin-bottom:10px;letter-spacing:-0.5px;
+}
+.h-line1{color:#fff;}
+.h-line2{
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.subtitle{color:var(--muted);font-size:.92rem;font-weight:300;}
+
+/* ── PAGE TABS ── */
+.page-nav{
+  display:flex;justify-content:center;gap:0;
+  max-width:520px;margin:0 auto 42px;
+  background:var(--surface);
+  border:1px solid rgba(124,77,255,.25);
+  border-radius:10px;overflow:hidden;
+}
+.page-tab{
+  flex:1;padding:12px 10px;
+  background:transparent;border:none;cursor:pointer;
+  font-family:var(--font-main);
+  font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);transition:all .25s;
+}
+.page-tab:not(:last-child){border-right:1px solid var(--border);}
+.page-tab.active{ background: var(--grad); color:#fff; }
+
+/* ── PAGE SECTIONS ── */
+.page-section{display:none;}
+.page-section.active{display:block;animation:fadeIn .35s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════════════ */
+/*  PAGE 1 — STRUCTURE GUIDE             */
+/* ══════════════════════════════════════ */
+
+.structure-intro{
+  max-width:780px;margin:0 auto 36px;
+  background:var(--surface);
+  border:1px solid rgba(124,77,255,.25);
+  border-radius:var(--r);
+  padding:24px 28px;
+  display:flex;align-items:center;gap:20px;
+}
+.formula-badge{
+  font-family:var(--font-main);
+  font-size:.72rem;font-weight:700;letter-spacing:2px;
+  color:var(--canva-cyan);margin-bottom:10px;text-transform:uppercase;
+}
+.formula{
+  font-family:var(--font-main);
+  font-size:clamp(1rem,2.5vw,1.4rem);
+  font-weight:700;color:#fff;
+  display:flex;align-items:center;flex-wrap:wrap;gap:6px;
+}
+.fpart{
+  padding:4px 12px;border-radius:6px;
+  font-size:.85em;
+}
+.fplus{color:var(--muted);font-size:.9em;}
+
+.struct-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:16px;max-width:1100px;margin:0 auto;
+}
+
+.struct-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  overflow:hidden;cursor:pointer;
+  transition:transform .28s cubic-bezier(.34,1.5,.64,1),box-shadow .25s,border-color .2s;
+  animation:slideUp .5s ease both;
+}
+.struct-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 14px 32px rgba(0,0,0,.35);
+  border-color:rgba(255,255,255,.14);
+}
+
+.sc-bar{height:3px;}
+.sc-front{padding:20px;}
+.sc-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.sc-num{
+  font-family:var(--font-main);
+  font-size:10px;font-weight:700;letter-spacing:2px;
+  padding:3px 9px;border-radius:5px;
+  flex-shrink:0;margin-top:2px;
+}
+.sc-emoji{font-size:1.5rem;flex-shrink:0;line-height:1;}
+.sc-title{
+  font-family:var(--font-main);
+  font-size:1.1rem;font-weight:700;color:#fff;line-height:1.2;
+}
+.sc-question{font-size:.8rem;color:var(--muted);margin-top:2px;font-style:italic;}
+.sc-desc{font-size:.86rem;color:#7a8fa8;line-height:1.65;font-weight:300;}
+
+.sc-expand{
+  display:flex;align-items:center;gap:5px;
+  margin-top:12px;
+  font-family:var(--font-main);
+  font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  opacity:.6;transition:opacity .2s,gap .2s;
+}
+.struct-card:hover .sc-expand{opacity:1;gap:8px;}
+.sc-arr{font-size:11px;transition:transform .3s;}
+.struct-card.opened .sc-arr{transform:rotate(90deg);}
+
+.sc-detail{max-height:0;overflow:hidden;transition:max-height .42s cubic-bezier(.4,0,.2,1);}
+.struct-card.opened .sc-detail{max-height:400px;}
+
+.sc-inner{
+  margin:0 20px 20px;padding-top:16px;
+  border-top:1px dashed var(--border);
+}
+.kw-label{
+  font-family:var(--font-main);
+  font-size:9px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:9px;color:var(--muted);
+}
+.kw-list{display:flex;flex-direction:column;gap:5px;}
+.kw-row{
+  display:flex;align-items:baseline;gap:10px;
+  font-family:var(--font-main);
+  font-size:.82rem;
+}
+.kw-en{color:#a78bfa;font-weight:600;min-width:160px;flex-shrink:0;}
+.kw-th{color:var(--muted);font-size:.78rem;font-weight:300;}
+
+/* DISSECT EXAMPLE */
+.dissect-box{
+  max-width:780px;margin:32px auto 0;
+  background:var(--surface);
+  border:1px solid rgba(124,77,255,.25);
+  border-radius:var(--r);padding:24px 28px;
+}
+.dissect-title{
+  font-family:var(--font-main);
+  font-size:11px;font-weight:700;letter-spacing:3px;
+  text-transform:uppercase;color:var(--canva-cyan);margin-bottom:16px;
+}
+.dissect-line{
+  display:flex;align-items:baseline;gap:12px;
+  padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.05);
+  font-family:var(--font-main);font-size:.88rem;
+}
+.dissect-line:last-child{border-bottom:none;}
+.dl-text{color:#c8daf0;font-weight:600;flex:1;}
+.dl-tag{
+  font-size:.72rem;font-weight:700;letter-spacing:1px;
+  padding:2px 9px;border-radius:4px;flex-shrink:0;white-space:nowrap;
+}
+
+.tip-rule{
+  margin-top:20px;padding:14px 16px;
+  background: rgba(0,196,204,.07);
+  border:1px solid rgba(0,196,204,.2);
+  border-left:3px solid var(--canva-teal);
+  border-radius:8px;
+  font-size:.84rem;color:#a0e8ea;line-height:1.7;
+}
+
+/* ══════════════════════════════════════ */
+/*  PAGE 2 — 10 PROMPTS                  */
+/* ══════════════════════════════════════ */
+
+/* lang toggle */
+.lang-toggle{
+  display:flex;justify-content:center;margin-bottom:30px;
+}
+.lang-group{
+  display:flex;
+  background:var(--surface);
+  border:1px solid rgba(124,77,255,.25);
+  border-radius:8px;overflow:hidden;
+}
+.lang-btn{
+  padding:9px 28px;
+  background:transparent;border:none;cursor:pointer;
+  font-family:var(--font-main);
+  font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);transition:all .22s;
+}
+.lang-btn.active{ background: var(--grad); color:#fff; }
+
+.prompt-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:18px;max-width:1100px;margin:0 auto;
+}
+
+.prompt-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  overflow:hidden;cursor:pointer;
+  transition:transform .28s cubic-bezier(.34,1.5,.64,1),box-shadow .25s,border-color .2s;
+  animation:slideUp .5s ease both;
+}
+.prompt-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 14px 32px rgba(0,0,0,.35);
+  border-color:rgba(255,255,255,.13);
+}
+.pc-strip{height:3px;}
+.pc-front{padding:20px 20px 16px;}
+.pc-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.pc-num{
+  font-family:var(--font-main);
+  font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);
+}
+.pc-cat{
+  font-family:var(--font-main);
+  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  padding:3px 9px;border-radius:4px;
+}
+.pc-title-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.pc-emoji{font-size:1.55rem;flex-shrink:0;line-height:1;}
+.pc-title{
+  font-family:var(--font-main);
+  font-size:1.05rem;font-weight:700;color:#fff;line-height:1.3;
+}
+.pc-desc{font-size:.83rem;color:var(--muted);line-height:1.6;font-weight:300;}
+
+.pc-expand{
+  display:flex;align-items:center;gap:5px;margin-top:11px;
+  font-family:var(--font-main);
+  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--canva-cyan);opacity:.7;transition:opacity .2s,gap .2s;
+}
+.prompt-card:hover .pc-expand{opacity:1;gap:8px;}
+.pc-arr{font-size:11px;transition:transform .3s;}
+.prompt-card.opened .pc-arr{transform:rotate(90deg);}
+
+.pc-detail{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1);}
+.prompt-card.opened .pc-detail{max-height:600px;}
+
+.pc-inner{margin:0 20px 20px;padding-top:16px;border-top:1px dashed var(--border);}
+
+.prompt-lbl{
+  font-family:var(--font-main);
+  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--canva-purple);margin-bottom:8px;
+}
+.prompt-box{
+  background:rgba(10,8,30,.6);
+  border:1px solid rgba(124,77,255,.15);
+  border-left:3px solid var(--canva-purple);
+  border-radius:8px;padding:14px 40px 14px 14px;
+  font-family:var(--font-main);
+  font-size:.8rem;color:#b8c8f0;line-height:1.75;
+  margin-bottom:10px;position:relative;
+}
+.prompt-box.thai{
+  border-left-color:var(--canva-teal);
+  color:#9ed8dc;font-size:.82rem;
+}
+.copy-btn{
+  position:absolute;top:9px;right:9px;
+  background:rgba(124,77,255,.15);
+  border:1px solid rgba(124,77,255,.35);
+  color:var(--canva-cyan);font-family:var(--font-mono);
+  font-size:9px;letter-spacing:1px;
+  padding:3px 9px;border-radius:4px;cursor:pointer;
+  font-weight:700;text-transform:uppercase;transition:all .18s;
+}
+.copy-btn:hover{background:rgba(124,77,255,.3);}
+.copy-btn.ok{color:var(--canva-cyan);border-color:var(--canva-cyan);}
+
+.struct-hint{
+  margin-top:8px;padding:10px 12px;
+  background:rgba(255,255,255,.03);
+  border-radius:6px;
+  font-size:.78rem;color:var(--muted);line-height:1.6;
+}
+.struct-hint strong{color:var(--canva-cyan);font-weight:600;}
+
+/* HIDDEN LANG */
+.lang-en .thai-content{display:none;}
+.lang-th .eng-content{display:none;}
+
+/* ── CANVA ORB ── */
+.canva-orb {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c4dff 0%, #2196f3 50%, #00c4cc 100%);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 18px;
+  box-shadow: 0 0 32px rgba(124,77,255,.5), 0 0 64px rgba(0,196,204,.25);
+  animation: orbPulse 3s ease-in-out infinite;
+}
+.orb-inner {
+  font-family: var(--font-main);
+  font-size: 1.9rem; font-weight: 900;
+  color: #fff; letter-spacing: -1px;
+  font-style: italic;
+  text-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+@keyframes orbPulse {
+  0%,100% { box-shadow: 0 0 28px rgba(124,77,255,.5), 0 0 56px rgba(0,196,204,.2); }
+  50%      { box-shadow: 0 0 44px rgba(124,77,255,.7), 0 0 88px rgba(0,196,204,.35); }
+}
+
+/* ── CARD HOVER GLOW ── */
+.struct-card:hover { box-shadow: 0 14px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(124,77,255,.2); }
+.prompt-card:hover { box-shadow: 0 14px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(0,196,204,.2); }
+@keyframes slideUp{
+  from{opacity:0;transform:translateY(20px) scale(.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* ── FOOTER ── */
+.footer{
+  text-align:center;margin-top:56px;
+  font-family:var(--font-main);
+  font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;
+}
+.footer strong { background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+@media(max-width:600px){
+  body{padding:28px 12px 60px;}
+  .struct-grid,.prompt-grid{grid-template-columns:1fr;}
+  .formula{font-size:1rem;}
+  .kw-en{min-width:120px;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="canva-orb">
+    <div class="orb-inner">C</div>
+  </div>
+  <div class="site-badge">🏗 Canva AI · Image Prompt Guide</div>
+  <h1>
+    <span class="h-line1">การเขียน Prompt Canva AI</span><br>
+    <span class="h-line2">Construction & Safety</span>
+  </h1>
+  <p class="subtitle">คู่มือสร้าง Prompt สำหรับ Canva AI · มีทั้งโครงสร้างและตัวอย่าง 10 Prompts พร้อมใช้</p>
+</div>
+
+<!-- PAGE TABS -->
+<div class="page-nav">
+  <button class="page-tab active" onclick="showPage('structure',this)">📐 โครงสร้าง Prompt</button>
+  <button class="page-tab" onclick="showPage('prompts',this)">🖼 10 Prompts พร้อมใช้</button>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- PAGE 1 : STRUCTURE                    -->
+<!-- ══════════════════════════════════════ -->
+<div class="page-section active" id="page-structure">
+
+  <div class="structure-intro" style="max-width:860px;margin:0 auto 32px;flex-direction:column;align-items:flex-start;">
+    <div class="formula-badge">✦ สูตรโครงสร้างหลัก</div>
+    <div class="formula">
+      <span class="fpart" style="background:rgba(162,89,255,.18);color:#c084fc">Subject</span>
+      <span class="fplus">+</span>
+      <span class="fpart" style="background:rgba(0,196,204,.15);color:#00e5d4">Details</span>
+      <span class="fplus">+</span>
+      <span class="fpart" style="background:rgba(74,144,217,.15);color:#7ec8f8">Action</span>
+      <span class="fplus">+</span>
+      <span class="fpart" style="background:rgba(124,77,255,.18);color:#a78bfa">Setting</span>
+      <span class="fplus">+</span>
+      <span class="fpart" style="background:rgba(0,229,212,.12);color:#5eead4">Style</span>
+      <span class="fplus">+</span>
+      <span class="fpart" style="background:rgba(162,89,255,.15);color:#d8b4fe">Lighting</span>
+      <span class="fplus">+</span>
+      <span class="fpart" style="background:rgba(0,196,204,.18);color:#67e8f9">Composition</span>
+      <span class="fplus">+</span>
+      <span class="fpart" style="background:rgba(74,144,217,.18);color:#93c5fd">Technical</span>
+    </div>
+  </div>
+
+  <div class="struct-grid" id="structGrid"></div>
+
+  <!-- DISSECT -->
+  <div class="dissect-box">
+    <div class="dissect-title">🔬 ตัวอย่าง Prompt จริง — แยกส่วนให้เห็น</div>
+    <div class="dissect-line">
+      <span class="dl-text">A heroic construction worker</span>
+      <span class="dl-tag" style="background:rgba(162,89,255,.18);color:#c084fc">Subject</span>
+    </div>
+    <div class="dissect-line">
+      <span class="dl-text">wearing full PPE (hard hat, safety vest, goggles, gloves)</span>
+      <span class="dl-tag" style="background:rgba(0,196,204,.15);color:#00e5d4">Details</span>
+    </div>
+    <div class="dissect-line">
+      <span class="dl-text">standing confidently</span>
+      <span class="dl-tag" style="background:rgba(74,144,217,.15);color:#7ec8f8">Action</span>
+    </div>
+    <div class="dissect-line">
+      <span class="dl-text">on a construction site</span>
+      <span class="dl-tag" style="background:rgba(124,77,255,.18);color:#a78bfa">Setting</span>
+    </div>
+    <div class="dissect-line">
+      <span class="dl-text">photorealistic, cinematic style</span>
+      <span class="dl-tag" style="background:rgba(0,229,212,.12);color:#5eead4">Style</span>
+    </div>
+    <div class="dissect-line">
+      <span class="dl-text">dramatic lighting from behind, golden hour</span>
+      <span class="dl-tag" style="background:rgba(162,89,255,.15);color:#d8b4fe">Lighting</span>
+    </div>
+    <div class="dissect-line">
+      <span class="dl-text">wide angle, full body shot</span>
+      <span class="dl-tag" style="background:rgba(0,196,204,.18);color:#67e8f9">Composition</span>
+    </div>
+    <div class="dissect-line">
+      <span class="dl-text">high resolution, professional photography look</span>
+      <span class="dl-tag" style="background:rgba(74,144,217,.18);color:#93c5fd">Technical</span>
+    </div>
+    <div class="tip-rule">
+      💡 <strong>กฎทอง:</strong> เรียง Subject → Details → Action → Setting → Style → Lighting → Composition → Technical
+      และอย่าให้ยาวเกิน <strong>200 คำ</strong> เพราะ AI จะเริ่ม "ลืม" ส่วนต้นของ Prompt ครับ
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- PAGE 2 : 10 PROMPTS                   -->
+<!-- ══════════════════════════════════════ -->
+<div class="page-section" id="page-prompts">
+
+  <div class="lang-toggle">
+    <div class="lang-group">
+      <button class="lang-btn active" onclick="setLang('en',this)">🇬🇧 English</button>
+      <button class="lang-btn" onclick="setLang('th',this)">🇹🇭 ภาษาไทย</button>
+    </div>
+  </div>
+
+  <div class="prompt-grid lang-en" id="promptGrid"></div>
+</div>
+
+<div class="footer"><strong>Canva AI Prompt Guide</strong> · Construction & Safety · Claude AI 2026</div>
+
+<script>
+/* ══ STRUCTURE DATA ══ */
+const structData = [
+  { num:'01', emoji:'🎯', color:'#c084fc', bg:'rgba(162,89,255,.18)',
+    title:'Subject', question:'ใคร หรือ อะไรอยู่ในภาพ?',
+    desc:'หัวใจของ Prompt ต้องระบุให้ชัดเจนที่สุด เป็นสิ่งแรกที่ AI จะโฟกัส',
+    keywords:[
+      {en:'construction worker', th:'คนงานก่อสร้าง'},
+      {en:'safety officer', th:'เจ้าหน้าที่ความปลอดภัย'},
+      {en:'group of diverse workers', th:'กลุ่มคนงานหลากหลายเชื้อชาติ'},
+      {en:'PPE equipment flat lay', th:'อุปกรณ์ความปลอดภัยจัดวาง'},
+      {en:'aerial view of construction site', th:'มุมสูงของไซต์ก่อสร้าง'},
+    ]},
+  { num:'02', emoji:'📋', color:'#00e5d4', bg:'rgba(0,196,204,.15)',
+    title:'Details / Attributes', question:'มีรายละเอียดอะไรบ้าง?',
+    desc:'ขยายความ Subject ด้วยลักษณะเฉพาะ เครื่องแต่งกาย อุปกรณ์ สี ที่ทำให้ภาพโดดเด่น',
+    keywords:[
+      {en:'wearing full PPE', th:'สวมอุปกรณ์ PPE ครบชุด'},
+      {en:'hard hat, safety vest, goggles', th:'หมวกนิรภัย เสื้อกั๊ก แว่นตา'},
+      {en:'holding clipboard', th:'ถือคลิปบอร์ด'},
+      {en:'secured with full harness', th:'คาดสายรัดนิรภัยครบชุด'},
+      {en:'reflective high-visibility gear', th:'ชุดสะท้อนแสงมองเห็นชัด'},
+    ]},
+  { num:'03', emoji:'🏃', color:'#7ec8f8', bg:'rgba(74,144,217,.15)',
+    title:'Action / Pose', question:'กำลังทำอะไร?',
+    desc:'พฤติกรรมหรือท่าทางของ Subject สร้างความมีชีวิตชีวาให้ภาพ',
+    keywords:[
+      {en:'standing confidently', th:'ยืนอย่างมั่นใจ'},
+      {en:'conducting site inspection', th:'กำลังตรวจสอบหน้าไซต์'},
+      {en:'pointing at safety board', th:'ชี้ที่กระดานความปลอดภัย'},
+      {en:'working at height', th:'ทำงานที่ความสูง'},
+      {en:'arranged neatly', th:'จัดเรียงอย่างเป็นระเบียบ'},
+    ]},
+  { num:'04', emoji:'🌍', color:'#a78bfa', bg:'rgba(124,77,255,.18)',
+    title:'Setting / Environment', question:'ฉากหลังและบรรยากาศที่ไหน?',
+    desc:'สภาพแวดล้อมและฉากหลัง ช่วยวาง Context ให้ภาพมีความหมายมากขึ้น',
+    keywords:[
+      {en:'on a construction site', th:'ในไซต์ก่อสร้าง'},
+      {en:'industrial environment', th:'สภาพแวดล้อมอุตสาหกรรม'},
+      {en:'dramatic sky background', th:'พื้นหลังท้องฟ้าดรามาติก'},
+      {en:'white studio background', th:'พื้นหลังขาวสตูดิโอ'},
+      {en:'night time construction site', th:'ไซต์ก่อสร้างยามค่ำคืน'},
+    ]},
+  { num:'05', emoji:'🎨', color:'#5eead4', bg:'rgba(0,229,212,.12)',
+    title:'Style', question:'สไตล์ภาพแบบไหน?',
+    desc:'กำหนดรูปแบบทางศิลปะของภาพ เลือกให้ตรงกับการนำไปใช้งาน',
+    keywords:[
+      {en:'photorealistic', th:'สมจริงเหมือนภาพถ่าย'},
+      {en:'cinematic style', th:'สไตล์ภาพยนตร์'},
+      {en:'flat design', th:'กราฟิก 2D เรียบ'},
+      {en:'documentary photography', th:'สไตล์ภาพสารคดี'},
+      {en:'corporate photography', th:'สไตล์ภาพองค์กร'},
+    ]},
+  { num:'06', emoji:'💡', color:'#d8b4fe', bg:'rgba(162,89,255,.15)',
+    title:'Lighting', question:'แสงแบบไหน?',
+    desc:'การควบคุมแสงมีผลมากที่สุดต่อ Mood และความรู้สึกของภาพ',
+    keywords:[
+      {en:'golden hour lighting', th:'แสงช่วงโกลเด้นอาวร์ อบอุ่น'},
+      {en:'dramatic lighting from behind', th:'แสงด้านหลัง สร้างความยิ่งใหญ่'},
+      {en:'clean studio lighting', th:'แสงสตูดิโอ สะอาด สม่ำเสมอ'},
+      {en:'natural daylight', th:'แสงธรรมชาติ ดูเป็นจริง'},
+      {en:'high contrast', th:'แสงตัดกันชัด โดดเด่น'},
+    ]},
+  { num:'07', emoji:'📐', color:'#67e8f9', bg:'rgba(0,196,204,.18)',
+    title:'Composition', question:'มุมกล้องและการจัดวางภาพ?',
+    desc:'กำหนดมุมมองและการจัดองค์ประกอบของภาพ ส่งผลต่อความรู้สึกของผู้ดู',
+    keywords:[
+      {en:'wide angle', th:'มุมกว้าง เห็นฉากทั้งหมด'},
+      {en:'top-down / flat lay view', th:'มุมมองจากด้านบนตรงๆ'},
+      {en:'aerial drone view', th:'มุมสูงจากโดรน'},
+      {en:'close-up detail', th:'ภาพใกล้ เน้นรายละเอียด'},
+      {en:'full body portrait', th:'ภาพเต็มตัว'},
+    ]},
+  { num:'08', emoji:'⚙️', color:'#93c5fd', bg:'rgba(74,144,217,.18)',
+    title:'Technical Quality', question:'คุณภาพและการใช้งานปลายทาง?',
+    desc:'กำหนดคุณภาพและความเหมาะสมกับสื่อที่จะนำไปใช้จริง',
+    keywords:[
+      {en:'high resolution', th:'ความละเอียดสูง'},
+      {en:'sharp detail', th:'คมชัดทุกรายละเอียด'},
+      {en:'space for text overlay', th:'มีพื้นที่สำหรับวางข้อความ'},
+      {en:'suitable for A3 printing', th:'เหมาะสำหรับพิมพ์ A3'},
+      {en:'professional commercial look', th:'ดูมืออาชีพเชิงพาณิชย์'},
+    ]},
+];
+
+/* ══ PROMPTS DATA ══ */
+const promptData = [
+  { num:'01', emoji:'👷', cat:'Portrait', color:'#c084fc', catBg:'rgba(162,89,255,.12)', catBorder:'rgba(162,89,255,.3)',
+    title:'Safety Hero Worker Portrait',
+    desc:'ภาพคนงานที่สร้าง Brand ความปลอดภัยสำหรับ Poster และ Social Media',
+    en:`A heroic construction worker wearing full PPE — hard hat, safety vest, goggles, and gloves — standing confidently on a construction site at golden hour. Dramatic cinematic lighting from behind, photorealistic style, wide angle full body shot, high resolution, professional photography look.`,
+    th:`ภาพคนงานก่อสร้างที่ดูน่าเชื่อถือและทรงพลัง สวมอุปกรณ์ความปลอดภัยครบชุด ทั้งหมวกนิรภัย เสื้อกั๊กสะท้อนแสง แว่นตานิรภัย และถุงมือ ยืนอยู่หน้าไซต์ก่อสร้างในช่วงแสงทองของเย็น แสงส่องมาจากด้านหลังแบบ Cinematic ภาพถ่ายสไตล์มืออาชีพ ความละเอียดสูง สมจริง`,
+    struct:'Subject · Details · Setting · Lighting · Style · Composition · Technical' },
+
+  { num:'02', emoji:'🟧', cat:'Background', color:'#00e5d4', catBg:'rgba(0,196,204,.1)', catBorder:'rgba(0,196,204,.3)',
+    title:'Safety Signage Poster Background',
+    desc:'พื้นหลังสำหรับโปสเตอร์ความปลอดภัย มีพื้นที่ว่างสำหรับใส่ข้อความ',
+    en:`Clean industrial construction site background, bright orange and yellow safety warning color scheme, blurred workers wearing PPE in background, wide angle composition, flat lay feel, generous empty space in center for text overlay, professional corporate poster style, high resolution.`,
+    th:`พื้นหลังไซต์ก่อสร้างสไตล์อุตสาหกรรม โทนสีส้มและเหลืองสัญลักษณ์ความปลอดภัย มีคนงานสวมอุปกรณ์ PPE เบลอๆ อยู่เบื้องหลัง มุมกว้าง มีพื้นที่ว่างตรงกลางสำหรับใส่ข้อความทับ สไตล์โปสเตอร์องค์กรมืออาชีพ ความละเอียดสูง`,
+    struct:'Setting · Details · Composition · Technical' },
+
+  { num:'03', emoji:'👥', cat:'Team', color:'#7ec8f8', catBg:'rgba(74,144,217,.1)', catBorder:'rgba(74,144,217,.3)',
+    title:'Team Safety Briefing (Toolbox Talk)',
+    desc:'ภาพทีมงานประชุม Safety Talk เหมาะสำหรับ Training Material',
+    en:`Group of diverse construction workers attending a morning safety toolbox talk, wearing hard hats and safety vests, team leader pointing at a safety board, warm natural daylight, candid documentary photography style, realistic and authentic atmosphere, sharp detail.`,
+    th:`กลุ่มคนงานก่อสร้างหลากหลายเชื้อชาติ นั่งฟัง Toolbox Talk ยามเช้า สวมหมวกนิรภัยและเสื้อกั๊ก หัวหน้างานชี้ที่กระดานความปลอดภัย แสงธรรมชาติอบอุ่น สไตล์ภาพสารคดี บรรยากาศจริง ดูเป็นธรรมชาติ`,
+    struct:'Subject · Details · Action · Setting · Lighting · Style' },
+
+  { num:'04', emoji:'🚁', cat:'Aerial', color:'#a78bfa', catBg:'rgba(124,77,255,.12)', catBorder:'rgba(124,77,255,.3)',
+    title:'Aerial Construction Site Overview',
+    desc:'มุมโดรนของไซต์งาน เหมาะสำหรับ Presentation และ Report',
+    en:`Aerial drone view of a large active construction site, visible cranes, concrete structures, organized safety barriers and fencing, workers seen from above wearing high-visibility vests, golden hour warm light, ultra wide angle, professional commercial photography, ultra sharp detail.`,
+    th:`ภาพมุมสูงจากโดรนของไซต์ก่อสร้างขนาดใหญ่ที่กำลังดำเนินงาน มีเครน โครงสร้างคอนกรีต รั้วกั้นความปลอดภัยเป็นระเบียบ มองเห็นคนงานสวมเสื้อสะท้อนแสงจากด้านบน แสงช่วงโกลเด้นอาวร์ มุมกว้างพิเศษ คมชัด`,
+    struct:'Subject · Details · Action · Setting · Lighting · Composition · Technical' },
+
+  { num:'05', emoji:'🦺', cat:'Flat Lay', color:'#5eead4', catBg:'rgba(0,229,212,.1)', catBorder:'rgba(0,229,212,.3)',
+    title:'PPE Equipment Flat Lay',
+    desc:'ภาพ Product-style ของอุปกรณ์ PPE สำหรับโปสเตอร์ Infographic',
+    en:`Professional flat lay of construction safety equipment neatly arranged on a clean white background: hard hat, safety goggles, high-visibility vest, steel toe boots, gloves, ear protection. Top-down view, clean studio lighting, product photography style, sharp shadows, high resolution.`,
+    th:`ภาพ Flat Lay อุปกรณ์ความปลอดภัยก่อสร้าง จัดเรียงอย่างสวยงามบนพื้นขาว ประกอบด้วย หมวกนิรภัย แว่นตา เสื้อกั๊กสะท้อนแสง รองเท้าหัวเหล็ก ถุงมือ และที่ครอบหู มุมมองจากด้านบน แสงสตูดิโอสะอาด สไตล์ภาพสินค้า`,
+    struct:'Subject · Details · Setting · Composition · Lighting · Style · Technical' },
+
+  { num:'06', emoji:'🏗️', cat:'Height Work', color:'#d8b4fe', catBg:'rgba(162,89,255,.1)', catBorder:'rgba(162,89,255,.3)',
+    title:'Working at Height Safety',
+    desc:'ภาพสร้างแรงบันดาลใจเรื่องความปลอดภัยบนที่สูง',
+    en:`Construction worker safely secured with a full body harness and visible lanyard, working at height on a steel structure, dramatic open sky background, safety equipment clearly shown, confident and inspiring mood, photorealistic, natural daylight, wide angle.`,
+    th:`คนงานก่อสร้างสวมสายรัดนิรภัยและเชือกกันตกครบชุด กำลังทำงานบนโครงสร้างเหล็กที่ความสูง พื้นหลังเป็นท้องฟ้าสวยงาม มองเห็นอุปกรณ์ความปลอดภัยชัดเจน ภาพสมจริง บรรยากาศมีความมั่นใจและแรงบันดาลใจ`,
+    struct:'Subject · Details · Action · Setting · Style · Lighting · Composition' },
+
+  { num:'07', emoji:'⚠️', cat:'Confined Space', color:'#67e8f9', catBg:'rgba(0,196,204,.12)', catBorder:'rgba(0,196,204,.3)',
+    title:'Confined Space Entry Procedure',
+    desc:'ภาพขั้นตอน PTW สำหรับเอกสาร Training และ SOP',
+    en:`Two safety officers at a confined space manhole entry point, one performing atmospheric testing with a gas detector device, safety tripod and rescue equipment visible, proper warning signage in background, industrial environment, educational documentary style, clear sharp detail.`,
+    th:`เจ้าหน้าที่ความปลอดภัย 2 คน อยู่ที่จุดเข้า Confined Space คนหนึ่งกำลังตรวจวัดก๊าซด้วยเครื่องตรวจสอบ มีป้ายเตือนและอุปกรณ์ Tripod กู้ภัยชัดเจน สภาพแวดล้อมอุตสาหกรรม สไตล์ภาพเพื่อการศึกษา รายละเอียดครบถ้วน`,
+    struct:'Subject · Details · Action · Setting · Style · Technical' },
+
+  { num:'08', emoji:'🚨', cat:'Poster', color:'#c084fc', catBg:'rgba(162,89,255,.12)', catBorder:'rgba(162,89,255,.3)',
+    title:'Construction Safety Warning Poster',
+    desc:'กราฟิกโปสเตอร์ความปลอดภัย สีแดง-เหลืองตัดกันชัด พิมพ์ได้เลย',
+    en:`Bold construction safety awareness poster design, strong red and yellow high-contrast color scheme, bold silhouette of construction worker with safety symbols and icons, modern flat graphic design style, generous empty space for typography, suitable for A3 poster printing, high resolution.`,
+    th:`ดีไซน์โปสเตอร์รณรงค์ความปลอดภัยก่อสร้าง โทนสีแดงและเหลืองตัดกันชัดเจน มี Silhouette คนงานพร้อมสัญลักษณ์ความปลอดภัย กราฟิกสไตล์โมเดิร์น มีพื้นที่สำหรับตัวอักษร Design แบบ Flat เหมาะสำหรับพิมพ์ขนาด A3`,
+    struct:'Subject · Details · Style · Composition · Technical' },
+
+  { num:'09', emoji:'🌙', cat:'Night Site', color:'#93c5fd', catBg:'rgba(74,144,217,.12)', catBorder:'rgba(74,144,217,.3)',
+    title:'Night Construction Site with Safety Lighting',
+    desc:'ภาพงานก่อสร้างกลางคืน บรรยากาศ Industrial สวยงาม',
+    en:`Night time construction site with proper safety lighting illuminating the scene, glowing warning barriers and fencing, workers in reflective high-visibility gear clearly visible, long exposure photography effect, dramatic industrial atmosphere, professional editorial photography style.`,
+    th:`ไซต์ก่อสร้างยามค่ำคืนที่มีระบบไฟส่องสว่างด้านความปลอดภัย รั้วกั้นเรืองแสง คนงานสวมชุดสะท้อนแสงมองเห็นชัด เอฟเฟกต์ภาพถ่าย Long Exposure บรรยากาศอุตสาหกรรมที่น่าประทับใจ สไตล์ Editorial`,
+    struct:'Setting · Details · Action · Lighting · Style · Technical' },
+
+  { num:'10', emoji:'🔍', cat:'Inspection', color:'#00e5d4', catBg:'rgba(0,196,204,.12)', catBorder:'rgba(0,196,204,.3)',
+    title:'Safety Officer Site Inspection',
+    desc:'ภาพ Corporate ของเจ้าหน้าที่ Safety ตรวจสอบหน้าไซต์',
+    en:`Professional safety officer in full PPE uniform holding a clipboard, conducting a site safety inspection walk, modern construction building in background, confident professional posture, natural daylight, photorealistic corporate photography style, sharp detail, high resolution.`,
+    th:`เจ้าหน้าที่ความปลอดภัยมืออาชีพ สวม PPE ครบชุด ถือคลิปบอร์ดกำลังตรวจสอบความปลอดภัยในไซต์ พื้นหลังเป็นอาคารก่อสร้างสมัยใหม่ ท่าทางมั่นใจ แสงธรรมชาติ ภาพถ่ายสไตล์ Corporate มืออาชีพ สมจริง`,
+    struct:'Subject · Details · Action · Setting · Lighting · Style · Technical' },
+];
+
+/* ══ RENDER STRUCTURE ══ */
+function renderStructure() {
+  const g = document.getElementById('structGrid');
+  structData.forEach((d,i) => {
+    const delay = (i*0.05+0.04).toFixed(2);
+    const kws = d.keywords.map(k=>`<div class="kw-row"><span class="kw-en">${k.en}</span><span class="kw-th">${k.th}</span></div>`).join('');
+    g.innerHTML += `
+    <div class="struct-card" onclick="toggleCard(this)" style="animation-delay:${delay}s">
+      <div class="sc-bar" style="background:${d.color}"></div>
+      <div class="sc-front">
+        <div class="sc-top">
+          <span class="sc-num" style="background:${d.bg};color:${d.color}">PART ${d.num}</span>
+          <span class="sc-emoji">${d.emoji}</span>
+          <div>
+            <div class="sc-title" style="color:${d.color}">${d.title}</div>
+            <div class="sc-question">${d.question}</div>
+          </div>
+        </div>
+        <div class="sc-desc">${d.desc}</div>
+        <div class="sc-expand" style="color:${d.color}"><span class="sc-arr">▶</span> ดูคำตัวอย่าง</div>
+      </div>
+      <div class="sc-detail">
+        <div class="sc-inner">
+          <div class="kw-label">✦ คำ Keyword ที่ใช้บ่อย</div>
+          <div class="kw-list">${kws}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+}
+
+/* ══ RENDER PROMPTS ══ */
+function renderPrompts() {
+  const g = document.getElementById('promptGrid');
+  promptData.forEach((p,i) => {
+    const delay = (i*0.05+0.04).toFixed(2);
+    g.innerHTML += `
+    <div class="prompt-card" onclick="toggleCard(this)" style="animation-delay:${delay}s">
+      <div class="pc-strip" style="background:${p.color}"></div>
+      <div class="pc-front">
+        <div class="pc-meta">
+          <span class="pc-num">#${p.num}</span>
+          <span class="pc-cat" style="background:${p.catBg};color:${p.color};border:1px solid ${p.catBorder}">${p.cat}</span>
+        </div>
+        <div class="pc-title-row">
+          <span class="pc-emoji">${p.emoji}</span>
+          <div class="pc-title">${p.title}</div>
+        </div>
+        <div class="pc-desc">${p.desc}</div>
+        <div class="pc-expand"><span class="pc-arr">▶</span> ดู Prompt &amp; โครงสร้าง</div>
+      </div>
+      <div class="pc-detail">
+        <div class="pc-inner">
+          <div class="eng-content">
+            <div class="prompt-lbl" style="color:${p.color}">✦ English Prompt</div>
+            <div class="prompt-box" style="border-left-color:${p.color}">
+              <button class="copy-btn" onclick="event.stopPropagation();copyText(this)" style="color:${p.color}">Copy</button>
+              ${p.en}
+            </div>
+          </div>
+          <div class="thai-content">
+            <div class="prompt-lbl" style="color:var(--canva-teal)">✦ Thai Prompt (ภาษาไทย)</div>
+            <div class="prompt-box thai">
+              <button class="copy-btn" onclick="event.stopPropagation();copyText(this)" style="color:var(--canva-teal);border-color:rgba(0,196,204,.35)">Copy</button>
+              ${p.th}
+            </div>
+          </div>
+          <div class="struct-hint">
+            <strong>โครงสร้างที่ใช้:</strong> ${p.struct}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+}
+
+/* ══ CONTROLS ══ */
+function showPage(id, btn) {
+  document.querySelectorAll('.page-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+}
+
+let currentLang = 'en';
+function setLang(lang, btn) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const g = document.getElementById('promptGrid');
+  g.className = 'prompt-grid lang-' + lang;
+}
+
+function toggleCard(card) { card.classList.toggle('opened'); }
+
+function copyText(btn) {
+  const box = btn.closest('.prompt-box');
+  const text = box.innerText.replace(/^Copy|^Copied!/,'').trim();
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='Copied!'; btn.classList.add('ok');
+    setTimeout(()=>{btn.textContent='Copy'; btn.classList.remove('ok');},2000);
+  });
+}
+
+/* ══ INIT ══ */
+renderStructure();
+renderPrompts();
+</script>
+</body>
+</html>
